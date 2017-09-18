@@ -8,9 +8,8 @@ from django.forms import fields
 #主页
 def index(request):
     if request.method == 'POST':
-
+        pass
     elif request.method == 'GET':
-
         return render(request, 'back/index.html')
 
 
