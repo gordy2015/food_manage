@@ -1,0 +1,55 @@
+{% extends 'back/master.html' %}
+
+{% block title %} 餐桌管理 {% endblock %}
+
+{% block body %}
+        <div class="cont">
+
+            <div>
+                <form>
+                    <input type="text" name="tablename" placeholder="桌名">
+                    <input type="text" name="ordertime" placeholder="预定时间">
+                    <select name="tablestatus">
+                        {% for b in tst %}
+                        <option value={{ b.id }}>{{ b.tablestatus }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="添加">
+                </form>
+            </div>
+
+            <div>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <td>编号</td>
+                            <td>桌名</td>
+                            <td>状态</td>
+                            <td>预定时间</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for row in tm %}
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ row.tablename }}</td>
+                            <td>{{ row.ts.tablestatus }}</td>
+                            <td>{{ row.ordertime }}</td>
+                            <td>编辑 | 删除 </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+        </div>
+{% endblock %}
+
+{% block js %}
+
+
+
+{% endblock %}

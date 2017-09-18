@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        .menu{
+            display: block;
+            padding: 5px;
+
+        }
+        .cont{
+            position:absolute;
+            top:48px;
+            left: 210px;
+            bottom: 0;
+            right: 0;
+            overflow: auto
+        }
+
+    </style>
+    {% block css %} {% endblock %}
+</head>
+<body>
+
+    <div>
+
+
+        <div style="height: 48px;background-color: black;color: white">被玩坏的小鸟--点餐系统 </div>
+
+        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: brown;">
+            <a class="menu" href="/back/user_info/">用户管理</a>
+            <a class="menu" href="/back/user_group/">用户组管理</a>
+            <a class="menu" href="/back/table_manage/">餐桌管理</a>
+            <a class="menu" href="/back/foodtype_manage/">菜系管理</a>
+            <a class="menu" href="/back/food_manage/">菜品管理</a>
+            <a class="menu" href="/back/restaurant_order/">餐厅订单</a>
+        </div>
+        {% block body %} {% endblock %}
+
+    </div>
+
+    <script src="/static/jquery-1.12.4.js"></script>
+    {% block js %}{% endblock %}
+</body>
+</html>
