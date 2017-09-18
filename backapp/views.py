@@ -1,4 +1,4 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse,redirect
 from backapp import models
 from django import forms
 from django.forms import fields
@@ -8,7 +8,13 @@ from django.forms import fields
 #主页
 def index(request):
     if request.method == 'POST':
-        pass
+        u = request.POST.get('user')
+        p = request.POST.get('pwd')
+        w = models.user_info.objects.filter(username=u,password=p)
+        if w:
+            return redirect('/back/user_info/')
+        else:
+            return redirect('/back/index/')
     elif request.method == 'GET':
         return render(request, 'back/index.html')
 
