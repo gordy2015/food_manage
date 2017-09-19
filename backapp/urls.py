@@ -23,8 +23,9 @@ urlpatterns = [
     url(r'^user_info/$', views.user_info),
     url(r'^user_group/$', views.user_group),
     url(r'^table_manage/$', views.table_manage),
-    url(r'^foodtype_manage/$', views.foodtype_manage),
     url(r'^food_manage/$', views.food_manage),
+    url(r'^foodtype_manage/$', views.foodtype_manage),
+    url(r'^logout/$', views.logout),
     url(r'^restaurant_order/$', views.restaurant_order),
 
 ]

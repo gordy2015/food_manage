@@ -29,7 +29,12 @@
     <div>
 
 
-        <div style="height: 48px;background-color: black;color: white">被玩坏的小鸟--点餐系统 </div>
+        <div style="height: 48px;background-color: black;color: white">被玩坏的小鸟点餐系统
+            {% if request.session.username %}
+                &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
+                &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
+            {% endif %}
+         </div>
 
         <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: brown;">
             <a class="menu" href="/back/user_info/">用户管理</a>
