@@ -4,6 +4,8 @@ from django import forms
 from django.forms import fields
 
 
+
+
 #登陆检测装饰器
 def auth(func):
     def inner(request,*args,**kwargs):
@@ -14,13 +16,13 @@ def auth(func):
     return inner
 
 
-#主页/登陆页
+#主页/登陆首页
 def index(request):
     if request.method == 'POST':
         u = request.POST.get('user')
         p = request.POST.get('pwd')
         l = request.POST.get('login7days')
-        print(u,p ,l )
+        # print(u,p ,l )
         w = models.user_info.objects.filter(username=u,password=p)
         if w:
             request.session['username'] = u
@@ -31,7 +33,9 @@ def index(request):
                 request.session.set_expiry(86400)
             return redirect('/back/user_info/')
         else:
-            return redirect('/back/index/')
+            loginerr = '用户名或密码错误，请重试'
+            # return redirect('/back/index/')
+            return render(request, 'back/index.html',{'loginerr':loginerr})
     elif request.method == 'GET':
         v = request.session.get('is_login')
         if v:
@@ -49,21 +53,33 @@ class user_infoForm(forms.Form):
     username = fields.CharField(max_length=16)
     password = fields.CharField(max_length=32)
     email = fields.EmailField(max_length=32)
-    grouptype = fields.ChoiceField(
+    grouptype_id = fields.ChoiceField(
         choices=models.user_group.objects.values_list('id','groupname')
     )
+    # def __init__(self, *args, **kwargs):
+    #     super(user_infoForm,self).__init__(*args,**kwargs)
+    #     self.fields['grouptype'].choices = models.user_group.objects.values_list('id','groupname')
+
 
 
 @auth
 def user_info(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        obj = user_infoForm()
+        user_list = models.user_info.objects.all()
+        # fos in user_list:
+        #     print(s.username, s.grouptype.groupname)
+        return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list})
+    elif request.method == 'POST':
         obj = user_infoForm(request.POST)
+        print(request.POST)
         obj.is_valid()
         obj.errors
-        return render(request, 'back/user_info.html',{'obj':obj})
-    elif request.method == 'GET':
-        obj = user_infoForm()
-        return render(request, 'back/user_info.html', {'obj':obj})
+        print(obj.cleaned_data)
+        models.user_info.objects.create(**obj.cleaned_data)
+        #models.user_info.objects.create(**{'username': 'gord015', 'password': '123456', 'email': 'aa@qq.cc', 'grouptype_id': '1'})
+        return redirect('/back/user_info/')
+
 
 
 #用户组管理

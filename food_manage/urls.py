@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
+from foodapp import views
 
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    #url(r'^admin/', admin.site.urls),
     url(r'^back/', include("backapp.urls")),
-    url(r'^food/', include("foodapp.urls")),
+    url(r'^front/', include("foodapp.urls")),
+    url(r'^$', views.index),
 
 ]
