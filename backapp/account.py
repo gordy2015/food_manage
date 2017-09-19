@@ -89,6 +89,8 @@ def user_group(request):
 
 
 def userdel(request,nid):
+    obj = user_infoForm()
+    user_list = models.user_info.objects.all()
     u = request.session.get('username')
     a = models.user_info.objects.filter(id=nid)
     print(a)
@@ -103,7 +105,7 @@ def userdel(request,nid):
         w = models.user_info.objects.filter(id=nid).delete()
         delerr = '用户: ' + s + '删除成功'
     # return redirect('/back/user_info/')
-    return render(request, 'back/user_info.html',{'delerr': delerr})
+    return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr})
 
 
 
