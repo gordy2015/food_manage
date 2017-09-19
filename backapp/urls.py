@@ -15,17 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from backapp import views
+from backapp import views,account
 
 
 urlpatterns = [
-    url(r'^index/', views.index),
-    url(r'^user_info/$', views.user_info),
-    url(r'^user_group/$', views.user_group),
+    url(r'^index/', account.index),
+    url(r'^user_info/$', account.user_info),
+    url(r'^user_group/$', account.user_group),
+    url(r'^userdel_(\d+)/$', account.userdel),
+    url(r'^logout/$', account.logout),
     url(r'^table_manage/$', views.table_manage),
     url(r'^food_manage/$', views.food_manage),
     url(r'^foodtype_manage/$', views.foodtype_manage),
-    url(r'^logout/$', views.logout),
     url(r'^restaurant_order/$', views.restaurant_order),
 
 ]

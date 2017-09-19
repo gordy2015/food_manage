@@ -29,10 +29,26 @@
                     <li>
                         <a href="/cmdb/userdetail-{{ row.id }}/">{{ row.username }}</a>
                         所属用户组: {{ row.grouptype.groupname }}
-                        |<a href="/cmdb/useredit-{{ row.id }}/">编辑</a>|<a href="/cmdb/userdel-{{ row.id }}/">删除</a>
+                        |<a href="/cmdb/useredit_{{ row.id }}/">编辑</a>|<a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a>
 
                     </li>
                 {% endfor %}
-            </ul>
+                <p onload="myfunction()">{{ delerr }}</p>
+           </ul>
         </div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/jquery-1.12.4.js"></script>
+<script>
+    function userdel() {
+        if (!confirm("确认要删除？")) {
+            window.event.returnValue = false;
+        }
+    }
+    function myfunction() {
+        console.log(1)
+
+    }
+</script>
 {% endblock %}
