@@ -2,7 +2,7 @@
 
 {% block title %} 用户组管理 {% endblock %}
 {% block body %}
-          <div class="cont">
+    <div class="cont">
             <h3>添加用户</h3>
 {#            <form method="POST" action="/cmdb/user_info/">#}
 {#                <input type="text" name="user" />#}
@@ -23,18 +23,48 @@
         </form>
 
 
-            <h3>用户列表</h3>
-            <ul>
-                {% for row in user_list %}
-                    <li>
-                        <a href="/cmdb/userdetail-{{ row.id }}/">{{ row.username }}</a>
-                        所属用户组: {{ row.grouptype.groupname }}
-                        |<a href="/cmdb/useredit_{{ row.id }}/">编辑</a>|<a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a>
+            <h3>用户列表</h3> <span id="delerruser_info.html">{{ delerr }}</span>
+                <table border="1">
+                        <tr>
+                        <th>编号</th>
+                        <th>用户名</th>
+                        <th>操作</th>
+                        </tr>
+                        {% for row in user_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                             <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
+                             <td><a id={{ row.id }}  href="/back/useredit/">编辑</a>
+                             <a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a> </td>
+                        </tr>
+                        {% endfor %}
+                </table>
 
-                    </li>
-                {% endfor %}
-                <p onload="myfunction()">{{ delerr }}</p>
-           </ul>
+            <div>
+                <ul>
+                    {% for row in user_detail %}
+                        <li>{{ row.username }}</li>
+                        <li>{{ row.email }}</li>
+                        <li>{{ row.grouptype.groupname }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div>
+                <form id='useredit' action="/back/useredit/" method="post">
+                    {% csrf_token %}
+                    {% for row in user_edit %}
+                    <input type="text" name="user2" placeholder="用户名" value="{{ row.username }}">
+                    <input type="password" name="pwd2" placeholder="密码" value="{{ row.password }}">
+                    <input type="text" name="email2" placeholder="邮箱" value="{{ row.email }}">
+                    <select name="grouptype">
+                        <option value="{{ row.grouptype_id }}">{{ row.grouptype.groupname }}</option>
+                    </select>
+                    {% endfor %}
+                    <input type="submit" value="修改">
+                </form>
+
+            </div>
         </div>
 {% endblock %}
 
@@ -46,9 +76,6 @@
             window.event.returnValue = false;
         }
     }
-    function myfunction() {
-        console.log(1)
 
-    }
 </script>
 {% endblock %}
