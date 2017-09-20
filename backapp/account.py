@@ -1,7 +1,7 @@
 from django.shortcuts import render,HttpResponse,redirect
 from backapp import models
 from django import forms
-from django.forms import fields
+from django.forms import fields,widgets
 
 
 #登陆检测装饰器
@@ -50,7 +50,8 @@ def logout(request):
 
 class user_infoForm(forms.Form):
     username = fields.CharField(max_length=16)
-    password = fields.CharField(max_length=32)
+    password = fields.CharField(max_length=32,
+                                widget=forms.widgets.PasswordInput)
     email = fields.EmailField(max_length=32)
     grouptype_id = fields.ChoiceField(
         choices=models.user_group.objects.values_list('id','groupname')
@@ -66,9 +67,10 @@ def user_info(request):
     if request.method == 'GET':
         obj = user_infoForm()
         user_list = models.user_info.objects.all()
-        # fos in user_list:
+        # for s in user_list:
         #     print(s.username, s.grouptype.groupname)
-        return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list})
+        group_list = models.user_group.objects.all()
+        return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list,'group_list':group_list})
     elif request.method == 'POST':
         obj = user_infoForm(request.POST)
         print(request.POST)
@@ -80,14 +82,8 @@ def user_info(request):
         return redirect('/back/user_info/')
 
 
-
-#用户组管理
+#删除用户
 @auth
-def user_group(request):
-    return render(request, 'back/user_group.html')
-
-
-
 def userdel(request,nid):
     obj = user_infoForm()
     user_list = models.user_info.objects.all()
@@ -107,5 +103,64 @@ def userdel(request,nid):
     # return redirect('/back/user_info/')
     return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr})
 
+#编辑用户
+@auth
+def useredit(request):
+    if request.method == 'POST':
+        i = request.POST.get('edit_id2')
+        u = request.POST.get('user2')
+        p = request.POST.get('pwd2')
+        e = request.POST.get('email2')
+        g = request.POST.get('grouptype2')
+        # print(i,u,p,e,g,type(g))
+        if p:
+            dic = {'password':p,'email':e,'grouptype':g}
+        else:
+            dic = {'email':e,'grouptype':g}
+        #password=p,email=e,grouptype=g
 
+        models.user_info.objects.filter(id=i).update(**dic)
+        return redirect('/back/user_info/')
+
+import json
+@auth
+def useredit_ajax(request):
+    ret = {'status': True, 'error': 'None', 'data': None}
+    try:
+        i = request.POST.get('id')
+        print(i)
+        result = models.user_info.objects.filter(id=i)
+        # print(result)
+        for s in result:
+            # print(s)
+            m = {'email':s.email, 'grouptype': s.grouptype_id}
+        if result:
+            ret['data'] = m
+
+        else:
+            ret['status'] = False
+            ret['error'] = 'not found this user'
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = 'request error'
+    print(type(ret))
+    print(ret)
+    print(json.dumps(ret))
+
+    return HttpResponse(json.dumps(ret))
+
+#用户详情
+@auth
+def userdetail(request,nid):
+    obj = user_infoForm()
+    user_list= models.user_info.objects.all()
+    user_detail = models.user_info.objects.all().filter(id=nid)
+    return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list, 'user_detail': user_detail})
+
+
+
+#用户组管理
+@auth
+def user_group(request):
+    return render(request, 'back/user_group.html')
 

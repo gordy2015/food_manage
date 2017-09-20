@@ -23,7 +23,7 @@
         </form>
 
 
-            <h3>用户列表</h3> <span id="delerruser_info.html">{{ delerr }}</span>
+            <h3>用户列表</h3> <span>{{ delerr }}</span>
                 <table border="1">
                         <tr>
                         <th>编号</th>
@@ -31,11 +31,10 @@
                         <th>操作</th>
                         </tr>
                         {% for row in user_list %}
-                        <tr>
+                        <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
                             <td>{{ forloop.counter }}</td>
                              <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
-                             <td><a id={{ row.id }}  href="/back/useredit/">编辑</a>
-                             <a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a> </td>
+                             <td><a href="#" onclick="useredit({{ row.id }})"   class="useredit">编辑</input> <a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a> </td>
                         </tr>
                         {% endfor %}
                 </table>
@@ -43,38 +42,96 @@
             <div>
                 <ul>
                     {% for row in user_detail %}
-                        <li>{{ row.username }}</li>
-                        <li>{{ row.email }}</li>
-                        <li>{{ row.grouptype.groupname }}</li>
+                        <li>用户名：{{ row.username }}</li>
+                        <li>邮箱：{{ row.email }}</li>
+                        <li>所属用户组：{{ row.grouptype.groupname }}</li>
                     {% endfor %}
                 </ul>
             </div>
 
+            <div class="shade hide"></div>
             <div>
-                <form id='useredit' action="/back/useredit/" method="post">
+                <form class="edit-modal hide" action="/back/useredit/" method="post">
+                    <p id="user"></p>
                     {% csrf_token %}
-                    {% for row in user_edit %}
-                    <input type="text" name="user2" placeholder="用户名" value="{{ row.username }}">
-                    <input type="password" name="pwd2" placeholder="密码" value="{{ row.password }}">
-                    <input type="text" name="email2" placeholder="邮箱" value="{{ row.email }}">
-                    <select name="grouptype">
-                        <option value="{{ row.grouptype_id }}">{{ row.grouptype.groupname }}</option>
-                    </select>
-                    {% endfor %}
-                    <input type="submit" value="修改">
-                </form>
+                    <input type="hidden" name="edit_id2" id="edit_id2">
+{#                    <input type="text" name="user2" id="user2" placeholder="用户名">#}
+                    <input type="password" name="pwd2" id="pwd2" placeholder="密码">
+                    <input type="text" name="email2" id="email2" placeholder="邮箱">
 
+                    <select name="grouptype2" id="grouptype2">
+                        {% for row in group_list %}
+                        <option value="{{ row.id }}"> {{ row.groupname }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="修改">
+                    <input type="button" value="取消" id="cancel_useredit">
+                </form>
             </div>
         </div>
 {% endblock %}
 
 {% block js %}
 <script src="/static/jquery-1.12.4.js"></script>
+<script src="/static/jquery.cookie.js"></script>
+
 <script>
+
+
+
     function userdel() {
         if (!confirm("确认要删除？")) {
             window.event.returnValue = false;
         }
+    }
+    
+    
+    $(function () {
+        $('.useredit').click(function () {
+            $('.shade,.edit-modal').removeClass('hide');
+            var bid = $(this).parent().parent().attr('bid');
+            var gid = $(this).parent().parent().attr('gid');
+            var username = $(this).parent().siblings().eq(1).text();
+            $('.edit-modal').find('input[name="edit_id2"]').val(bid);
+            $('.edit-modal').find('p[id=user]').text('编辑用户：' + username);
+
+        })
+        $('#cancel_useredit').click(function () {
+            $('.shade,.edit-modal').addClass('hide')
+        })
+    })
+
+
+
+
+
+    function useredit(id) {
+        $.ajaxSetup({
+            beforeSend: function(xhr,settings){
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+            }
+        });
+
+        $.ajax({
+            type: "post",
+            url: "/back/useredit_ajax/",
+            data: {id: id},
+            beforeSend: function (xhr,settings) {
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                $('#pwd2').val("");
+                $('#email2').val("");
+                $("#grouptype2").val("");
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+{#                $('#pwd2').val(data.password);#}
+                $('#email2').val(obj.data.email);
+                console.log(obj)
+                $("#grouptype2").val(obj.data.grouptype);
+            }
+
+
+        })
     }
 
 </script>

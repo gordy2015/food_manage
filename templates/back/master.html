@@ -21,6 +21,30 @@
             overflow: auto
         }
 
+        .hide{
+            display: none;
+        }
+        .shade{
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background: black;
+            opacity: 0.6;
+            z-index: 100;
+        }
+        .add-modal,.edit-modal{
+            position: fixed;
+            height: 300px;
+            width: 400px;
+            top:100px;
+            left: 50%;
+            z-index: 101;
+            border: 1px solid red;
+            background: white;
+            margin-left: -200px;
+        }
     </style>
     {% block css %} {% endblock %}
 </head>
