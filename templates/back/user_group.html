@@ -4,6 +4,7 @@
 {% block body %}
      <div class="cont">
             <h3>添加用户组</h3>
+            <p>{{ add_err }}</p>
             <form method="POST" action="/back/group_info/">
                 {% csrf_token %}
                 <input type="text" name="groupname" placeholder="新用户组"/>

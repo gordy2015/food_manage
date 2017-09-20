@@ -76,11 +76,16 @@ def userinfo(request):
         return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list,'group_list':group_list})
     elif request.method == 'POST':
         obj = user_infoForm(request.POST)
-        print(request.POST)
+        # print(request.POST)
         obj.is_valid()
-        obj.errors
-        print(obj.cleaned_data)
-        models.user_info.objects.create(**obj.cleaned_data)
+        # obj.errors
+        w = models.user_info.objects.filter(username=obj.cleaned_data['username']).first()
+        # print(w)
+        # print('obj.cleaned_data: %s %s' % (obj.cleaned_data['username'], obj.cleaned_data.values()))
+        if w == None:
+            models.user_info.objects.create(**obj.cleaned_data)
+        else:
+            print('username is exsit')
         #models.user_info.objects.create(**{'username': 'gord015', 'password': '123456', 'email': 'aa@qq.cc', 'grouptype_id': '1'})
         return redirect('/back/user_info/')
 
@@ -183,11 +188,18 @@ def groupinfo(request):
         return render(request, 'back/user_group.html', {'group_list':group_list})
     elif request.method == 'POST':
         g = request.POST.get('groupname')
-        print(g)
+        # print(g)
         if g:
-            models.user_group.objects.create(groupname=g)
+            w = models.user_group.objects.filter(groupname=g).first()
+            if w == None:
+                models.user_group.objects.create(groupname=g)
+                add_err = '用户组' + g + '添加成功'
+            else:
+                add_err = '用户组' + g + '已存在'
+        else:
+            add_err = '请输入新的用户组名称'
         group_list = models.user_group.objects.all()
-        return render(request, 'back/user_group.html', {'group_list': group_list})
+        return render(request, 'back/user_group.html', {'group_list': group_list,'add_err': add_err})
 
 
 #用户组详细
