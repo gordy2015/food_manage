@@ -34,7 +34,7 @@
                         <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
                             <td>{{ forloop.counter }}</td>
                              <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
-                             <td><a href="#" onclick="useredit({{ row.id }})"   class="useredit">编辑</input> <a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a> </td>
+                             <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑</input> <a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a> </td>
                         </tr>
                         {% endfor %}
                 </table>
@@ -72,8 +72,7 @@
 {% endblock %}
 
 {% block js %}
-<script src="/static/jquery-1.12.4.js"></script>
-<script src="/static/jquery.cookie.js"></script>
+
 
 <script>
 

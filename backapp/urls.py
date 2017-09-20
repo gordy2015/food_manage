@@ -20,13 +20,18 @@ from backapp import views,account
 
 urlpatterns = [
     url(r'^index/', account.index),
-    url(r'^user_info/$', account.user_info),
-    url(r'^user_group/$', account.user_group),
+    url(r'^user_info/$', account.userinfo),
     url(r'^userdel_(\d+)/$', account.userdel),
     url(r'^useredit/$', account.useredit),
     url(r'^logout/$', account.logout),
     url(r'^useredit_ajax/$', account.useredit_ajax),
     url(r'^userdetail_(\d+)/$', account.userdetail),
+
+    url(r'^group_info/$', account.groupinfo),
+    url(r'^groupdetail_(\d+)/$', account.groupdetail),
+    url(r'^groupedit/$', account.groupedit),
+    url(r'^groupdel_(\d+)/$', account.groupdel),
+
     url(r'^table_manage/$', views.table_manage),
     url(r'^food_manage/$', views.food_manage),
     url(r'^foodtype_manage/$', views.foodtype_manage),

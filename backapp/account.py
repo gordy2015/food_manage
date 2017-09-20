@@ -63,7 +63,7 @@ class user_infoForm(forms.Form):
 
 #用户管理
 @auth
-def user_info(request):
+def userinfo(request):
     if request.method == 'GET':
         obj = user_infoForm()
         user_list = models.user_info.objects.all()
@@ -117,8 +117,7 @@ def useredit(request):
             dic = {'password':p,'email':e,'grouptype':g}
         else:
             dic = {'email':e,'grouptype':g}
-        #password=p,email=e,grouptype=g
-
+        #models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
         models.user_info.objects.filter(id=i).update(**dic)
         return redirect('/back/user_info/')
 
@@ -149,18 +148,61 @@ def useredit_ajax(request):
 
     return HttpResponse(json.dumps(ret))
 
+
 #用户详情
 @auth
 def userdetail(request,nid):
     obj = user_infoForm()
     user_list= models.user_info.objects.all()
+    group_list = models.user_group.objects.all()
     user_detail = models.user_info.objects.all().filter(id=nid)
-    return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list, 'user_detail': user_detail})
+    return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list, 'user_detail': user_detail,'group_list':group_list})
 
 
 
 #用户组管理
 @auth
-def user_group(request):
-    return render(request, 'back/user_group.html')
+def groupinfo(request):
+    if request.method == 'GET':
+        group_list = models.user_group.objects.all()
+        return render(request, 'back/user_group.html', {'group_list':group_list})
+    elif request.method == 'POST':
+        g = request.POST.get('groupname')
+        print(g)
+        if g:
+            models.user_group.objects.create(groupname=g)
+        group_list = models.user_group.objects.all()
+        return render(request, 'back/user_group.html', {'group_list': group_list})
+
+
+#用户组详细
+@auth
+def groupdetail(request,nid):
+    group_list = models.user_group.objects.all()
+    return render(request, 'back/user_group.html', {'group_list': group_list})
+
+
+#用户组编辑
+@auth
+def groupedit(request):
+    if request.method == 'GET':
+        group_list = models.user_group.objects.all()
+        return render(request, 'back/user_group.html', {'group_list': group_list})
+    elif request.method == 'POST':
+        i = request.POST.get('gid')
+        g = request.POST.get('groupname')
+        if g:
+            models.user_group.objects.all().filter(id=i).update(groupname=g)
+        group_list = models.user_group.objects.all()
+        return render(request, 'back/user_group.html', {'group_list': group_list})
+
+
+#用户组删除
+@auth
+def groupdel(request,nid):
+    models.user_group.objects.all().filter(id=nid).delete()
+    group_list = models.user_group.objects.all()
+    return render(request, 'back/user_group.html', {'group_list': group_list})
+
+
 
