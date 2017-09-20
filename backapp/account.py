@@ -2,6 +2,7 @@ from django.shortcuts import render,HttpResponse,redirect
 from backapp import models
 from django import forms
 from django.forms import fields,widgets
+import json,re
 
 
 #登陆检测装饰器
@@ -49,12 +50,14 @@ def logout(request):
 
 
 class user_infoForm(forms.Form):
-    username = fields.CharField(max_length=16)
+    username = fields.CharField(max_length=16,label='用户名')
     password = fields.CharField(max_length=32,
-                                widget=forms.widgets.PasswordInput)
-    email = fields.EmailField(max_length=32)
+                                widget=forms.widgets.PasswordInput,label='密码')
+    email = fields.EmailField(max_length=32,label='邮箱')
     grouptype_id = fields.ChoiceField(
-        choices=models.user_group.objects.values_list('id','groupname')
+        choices=models.user_group.objects.values_list('id','groupname'),
+        label='所属用户组'
+
     )
     # def __init__(self, *args, **kwargs):
     #     super(user_infoForm,self).__init__(*args,**kwargs)
@@ -87,6 +90,7 @@ def userinfo(request):
 def userdel(request,nid):
     obj = user_infoForm()
     user_list = models.user_info.objects.all()
+    group_list = models.user_group.objects.all()
     u = request.session.get('username')
     a = models.user_info.objects.filter(id=nid)
     print(a)
@@ -101,7 +105,8 @@ def userdel(request,nid):
         w = models.user_info.objects.filter(id=nid).delete()
         delerr = '用户: ' + s + '删除成功'
     # return redirect('/back/user_info/')
-    return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr})
+    return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr,'group_list':group_list})
+
 
 #编辑用户
 @auth
@@ -113,21 +118,31 @@ def useredit(request):
         e = request.POST.get('email2')
         g = request.POST.get('grouptype2')
         # print(i,u,p,e,g,type(g))
-        if p:
-            dic = {'password':p,'email':e,'grouptype':g}
+        es = models.user_info.objects.filter(id=i).values('email').first()
+        # print(es)
+        #判断邮箱格式是否正确，不正确则使用原值
+        if len(e) == 0 or len(e) >= 7:
+            if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", e) == None:
+                e = es['email']
+                # email_error = '邮箱格式错误'
         else:
-            dic = {'email':e,'grouptype':g}
-        #models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
+            e = es['email']
+            # print(e)
+        if p:
+            dic = {'password': p, 'email': e, 'grouptype': g}
+        else:
+            dic = {'email': e, 'grouptype': g}
+        # # models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
         models.user_info.objects.filter(id=i).update(**dic)
         return redirect('/back/user_info/')
 
-import json
+
 @auth
 def useredit_ajax(request):
     ret = {'status': True, 'error': 'None', 'data': None}
     try:
         i = request.POST.get('id')
-        print(i)
+        # print(i)
         result = models.user_info.objects.filter(id=i)
         # print(result)
         for s in result:
@@ -142,9 +157,9 @@ def useredit_ajax(request):
     except Exception as e:
         ret['status'] = False
         ret['error'] = 'request error'
-    print(type(ret))
-    print(ret)
-    print(json.dumps(ret))
+    # print(type(ret))
+    # print(ret)
+    # print(json.dumps(ret))
 
     return HttpResponse(json.dumps(ret))
 
@@ -200,9 +215,14 @@ def groupedit(request):
 #用户组删除
 @auth
 def groupdel(request,nid):
-    models.user_group.objects.all().filter(id=nid).delete()
+    w = models.user_info.objects.all().filter(grouptype_id=nid).first()
+    if w:
+        groupdel_err = '无法删除，此用户组包含用户'
+    else:
+        groupdel_err = '已删除此用户组'
+        models.user_group.objects.all().filter(id=nid).delete()
     group_list = models.user_group.objects.all()
-    return render(request, 'back/user_group.html', {'group_list': group_list})
+    return render(request, 'back/user_group.html', {'group_list': group_list, 'groupdel_err': groupdel_err})
 
 
 
