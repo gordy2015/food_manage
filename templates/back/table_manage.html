@@ -16,7 +16,7 @@
                         <option value={{ b.id }}>{{ b.tablestatus }}</option>
                         {% endfor %}
                     </select>
-                    <input type="submit" value="添加">
+                    <input type="submit" value="添加" id="tableadd">
                 </form>
             </div>
             <div>
@@ -43,13 +43,22 @@
                             <td>{{ row.tablename }}</td>
                             <td>{{ row.ts.tablestatus }}</td>
                             <td>{{ row.ordertime }}</td>
-                            <td>编辑 | 删除 </td>
+                                <td><a class="tableedit">编辑</a> | <a class="tabledel">删除</a> </td>
                             {% endfor %}
                         </tr>
                     </tbody>
                 </table>
             </div>
 
+            <div class="tableedit-modal hide">
+                <form id="tableedit_form">
+                    <input type="text" name="tablename">
+                    <input type="text" name="tablestatus">
+                    <input type="text" name="ordertime">
+                    <input type="button" value="确定修改" id="tableedit_confirm">
+                    <input type="button" value="取消" class="tableedit_cancel">
+                </form>
+            </div>
 
 
         </div>
@@ -57,6 +66,21 @@
 
 {% block js %}
 
+    <script>
+        $(function () {
+            $('.tableedit').click(function () {
+                $('.tableedit-modal').removeClass('hide');
+
+            })
+            $('.tableedit_cancel').click(function () {
+                $('.tableedit-modal').addClass('hide')
+            })
+        })
+        
+        $(function () {
+            
+        })
+    </script>
 
 
 {% endblock %}
