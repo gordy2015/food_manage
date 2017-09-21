@@ -4,18 +4,7 @@
 {% block body %}
     <div class="cont">
             <h3>添加用户</h3>
-{#            <form method="POST" action="/cmdb/user_info/">#}
-{#                <input type="text" name="user" />#}
-{#                <input type="text" name="pwd" />#}
-{#                #}
-{##}
-{#                <select name="group_id">#}
-{#                    {% for item in group_list %}#}
-{#                        <option value="{{ item.uid }}">{{ item.caption }}</option>#}
-{#                    {% endfor %}#}
-{#                </select>#}
-{#                <input type="submit" value="添加"/>#}
-{#            </form>#}
+
         <p>{{ useradd_err }}</p>
         <form action="/back/user_info/" method="POST">
             {% csrf_token %}
@@ -26,7 +15,6 @@
 {#            {{ obj.as_table }}#}
             <input type="submit" value="添加">
         </form>
-
 
             <h3>用户列表</h3> <span>{{ delerr }}</span>
                 <table border="1">
@@ -57,7 +45,7 @@
 
             <div class="shade hide"></div>
             <div>
-                <form class="edit-modal hide" action="/back/useredit/" method="post">
+                <form class="edit-modal hide">
                     <p id="user"></p>
                     {% csrf_token %}
                     <input type="hidden" name="edit_id2" id="edit_id2">
@@ -70,27 +58,26 @@
                         <option value="{{ row.id }}"> {{ row.groupname }}</option>
                         {% endfor %}
                     </select>
-                    <input type="submit" value="修改">
+                    <a id="edit_submit" onclick="edit_submit()">确认编辑</a>
                     <input type="button" value="取消" id="cancel_useredit">
+                    <p id="useredit_err" style="color: red"></p>
                 </form>
+
             </div>
         </div>
 {% endblock %}
 
+
 {% block js %}
 
-
 <script>
-
-
 
     function userdel() {
         if (!confirm("确认要删除？")) {
             window.event.returnValue = false;
         }
     }
-    
-    
+
     $(function () {
         $('.useredit').click(function () {
             $('.shade,.edit-modal').removeClass('hide');
@@ -104,10 +91,7 @@
         $('#cancel_useredit').click(function () {
             $('.shade,.edit-modal').addClass('hide')
         })
-    })
-
-
-
+    });
 
 
     function useredit(id) {
@@ -129,15 +113,49 @@
             },
             success: function (data) {
                 var obj = JSON.parse(data);
-{#                $('#pwd2').val(data.password);#}
                 $('#email2').val(obj.data.email);
-                console.log(obj)
+{#                console.log(obj)#}
                 $("#grouptype2").val(obj.data.grouptype);
             }
-
-
         })
     }
+
+
+    function edit_submit() {
+        $.ajaxSetup({
+            beforeSend: function(xhr,settings){
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+            }
+        });
+
+        $.ajax({
+            type: "post",
+            url: "/back/useredit_submit/",
+            data: $('.edit-modal').serialize(),
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if(obj.status){
+                    location.href = '/back/user_info';
+{#                    console.log(obj.status)#}
+                }else {
+                    $('#useredit_err').text(obj.error);
+                }
+            }
+        })
+    }
+
+    function myfun() {
+        {
+            var c = self.location.href;
+            var t = c.indexOf("/back/userdel_");
+            if ( t > 10 ) {
+                var newhref = 'http://' + self.location.host + '/back/user_info/';
+                top.location.href = newhref
+            }
+        }
+        /*用window.onload调用myfun()*/
+    }
+    window.onload = setTimeout(myfun,2000);
 
 </script>
 {% endblock %}

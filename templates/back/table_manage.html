@@ -6,6 +6,7 @@
         <div class="cont">
 
             <div>
+                <h3>餐桌列表</h3>
                 <form>
                     {% csrf_token %}
                     <input type="text" name="tablename" placeholder="桌名">
@@ -18,7 +19,12 @@
                     <input type="submit" value="添加">
                 </form>
             </div>
-
+            <div>
+                <form>
+                    <input type="text" name="search">
+                    <input type="submit" value="搜索">
+                </form>
+            </div>
             <div>
                 <table border="1">
                     <thead>

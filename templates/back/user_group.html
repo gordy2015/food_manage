@@ -60,6 +60,18 @@
 
     })
 
+    function myfun() {
+        {
+            var c = self.location.href;
+            var t = c.indexOf("/back/groupdel_");
+            if ( t > 10 ) {
+                var newhref = 'http://' + self.location.host + '/back/group_info/';
+                top.location.href = newhref
+            }
+        }
+        /*用window.onload调用myfun()*/
+    }
+    window.onload = setTimeout(myfun,2000);
 
 </script>
 

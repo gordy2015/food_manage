@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^index/', account.index),
     url(r'^user_info/$', account.userinfo),
     url(r'^userdel_(\d+)/$', account.userdel),
-    url(r'^useredit/$', account.useredit),
+    url(r'^useredit_submit/$', account.useredit_submit),
     url(r'^logout/$', account.logout),
     url(r'^useredit_ajax/$', account.useredit_ajax),
     url(r'^userdetail_(\d+)/$', account.userdetail),

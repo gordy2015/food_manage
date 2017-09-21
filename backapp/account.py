@@ -83,7 +83,6 @@ def userinfo(request):
         result = obj.is_valid()
         er = obj.errors
         w = models.user_info.objects.filter(username=obj.cleaned_data['username']).first()
-        # print(w)
         # print('obj.cleaned_data: %s %s' % (obj.cleaned_data['username'], obj.cleaned_data.values()))
         if w:
             useradd_err = '创建失败, 用户' + obj.cleaned_data['username'] + '已存在'
@@ -127,33 +126,42 @@ def userdel(request,nid):
 
 #编辑用户
 @auth
-def useredit(request):
-    if request.method == 'POST':
+def useredit_submit(request):
+    ret = {'status': True, 'error': 'None', 'data': None}
+    try:
+        # u = request.POST.get('user2')
         i = request.POST.get('edit_id2')
-        u = request.POST.get('user2')
         p = request.POST.get('pwd2')
         e = request.POST.get('email2')
         g = request.POST.get('grouptype2')
         # print(i,u,p,e,g,type(g))
         es = models.user_info.objects.filter(id=i).values('email').first()
-        # print(es)
-        #判断邮箱格式是否正确(邮箱名称可以包含中文)，不正确则使用原值
-        if len(e) == 0 or len(e) >= 7:
+        # 判断邮箱格式是否正确(邮箱名称可以包含中文)
+        if len(e) > 7:
             if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", e) == None:
-                e = es['email']
-                # email_error = '邮箱格式错误'
-        else:
-            e = es['email']
-        print(w)
-
-        if p:
+                ret['status'] = False
+                ret['error'] = '邮箱格式错误'
+        else:  # 邮箱长度1-7
+            ret['status'] = False
+            ret['error'] = '邮箱长度少于7位'
+        if p and e:
             dic = {'password': p, 'email': e, 'grouptype': g}
-        else:
+        elif p:
+            dic = {'password': p, 'grouptype': g}
+        elif e:
             dic = {'email': e, 'grouptype': g}
-
-        # # models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
+        else:
+            dic = {'grouptype': g}
         models.user_info.objects.filter(id=i).update(**dic)
-        return redirect('/back/user_info/')
+        # # models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    # print(type(ret))
+    # print(ret)
+    # print(json.dumps(ret))
+    return HttpResponse(json.dumps(ret))
+
 
 
 @auth
