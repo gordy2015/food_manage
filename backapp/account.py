@@ -50,18 +50,19 @@ def logout(request):
 
 
 class user_infoForm(forms.Form):
-    username = fields.CharField(max_length=16,label='用户名')
+    username = fields.CharField(max_length=16,label='新用户名',
+                                widget=forms.widgets.TextInput(attrs={'placeholder':'新用户名'}))
     password = fields.CharField(max_length=32,
-                                widget=forms.widgets.PasswordInput,label='密码')
-    email = fields.EmailField(max_length=32,label='邮箱')
+                                widget=forms.widgets.PasswordInput(attrs={'placeholder':'密码'}),label='密码')
+    email = fields.EmailField(max_length=32,
+                              error_messages={'invalid':'邮箱格式错误'},
+                               widget=widgets.TextInput(attrs={'placeholder':'邮箱'}))
     grouptype_id = fields.ChoiceField(
         choices=models.user_group.objects.values_list('id','groupname'),
-        label='所属用户组'
-
     )
-    # def __init__(self, *args, **kwargs):
-    #     super(user_infoForm,self).__init__(*args,**kwargs)
-    #     self.fields['grouptype'].choices = models.user_group.objects.values_list('id','groupname')
+    def __init__(self, *args, **kwargs):
+        super(user_infoForm,self).__init__(*args,**kwargs)
+        self.fields['grouptype_id'].choices = models.user_group.objects.values_list('id','groupname')
 
 
 #用户管理
@@ -69,25 +70,36 @@ class user_infoForm(forms.Form):
 def userinfo(request):
     if request.method == 'GET':
         obj = user_infoForm()
+        # print(obj)
         user_list = models.user_info.objects.all()
         # for s in user_list:
-        #     print(s.username, s.grouptype.groupname)
+        #     print(s.usame, s.grouptype.groupname)
         group_list = models.user_group.objects.all()
+        # print(group_list.values_list('id','groupname'))
         return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list,'group_list':group_list})
     elif request.method == 'POST':
         obj = user_infoForm(request.POST)
         # print(request.POST)
-        obj.is_valid()
-        # obj.errors
+        result = obj.is_valid()
+        er = obj.errors
         w = models.user_info.objects.filter(username=obj.cleaned_data['username']).first()
         # print(w)
         # print('obj.cleaned_data: %s %s' % (obj.cleaned_data['username'], obj.cleaned_data.values()))
-        if w == None:
-            models.user_info.objects.create(**obj.cleaned_data)
+        if w:
+            useradd_err = '创建失败, 用户' + obj.cleaned_data['username'] + '已存在'
         else:
-            print('username is exsit')
+            if result:
+                models.user_info.objects.create(**obj.cleaned_data)
+                useradd_err = '用户' + obj.cleaned_data['username'] + '创建成功'
+            else:
+                print(er)
+                useradd_err = '输入的格式错误，创建失败'
         #models.user_info.objects.create(**{'username': 'gord015', 'password': '123456', 'email': 'aa@qq.cc', 'grouptype_id': '1'})
-        return redirect('/back/user_info/')
+        obj = user_infoForm()
+        # print(obj)
+        user_list = models.user_info.objects.all()
+        group_list = models.user_group.objects.all()
+        return render(request, 'back/user_info.html', {'obj': obj, 'user_list': user_list, 'group_list': group_list,'useradd_err':useradd_err})
 
 
 #删除用户
@@ -125,18 +137,20 @@ def useredit(request):
         # print(i,u,p,e,g,type(g))
         es = models.user_info.objects.filter(id=i).values('email').first()
         # print(es)
-        #判断邮箱格式是否正确，不正确则使用原值
+        #判断邮箱格式是否正确(邮箱名称可以包含中文)，不正确则使用原值
         if len(e) == 0 or len(e) >= 7:
             if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", e) == None:
                 e = es['email']
                 # email_error = '邮箱格式错误'
         else:
             e = es['email']
-            # print(e)
+        print(w)
+
         if p:
             dic = {'password': p, 'email': e, 'grouptype': g}
         else:
             dic = {'email': e, 'grouptype': g}
+
         # # models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
         models.user_info.objects.filter(id=i).update(**dic)
         return redirect('/back/user_info/')

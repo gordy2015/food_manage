@@ -16,9 +16,14 @@
 {#                </select>#}
 {#                <input type="submit" value="添加"/>#}
 {#            </form>#}
+        <p>{{ useradd_err }}</p>
         <form action="/back/user_info/" method="POST">
             {% csrf_token %}
-            {{ obj.as_table }}
+            {{ obj.username }}
+            {{ obj.password }}
+            {{ obj.email }}
+            {{ obj.grouptype_id }}
+{#            {{ obj.as_table }}#}
             <input type="submit" value="添加">
         </form>
 
@@ -38,6 +43,7 @@
                         </tr>
                         {% endfor %}
                 </table>
+
 
             <div>
                 <ul>
