@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^index/', account.index),
     url(r'^user_info/$', account.userinfo),
     url(r'^userdel_(\d+)/$', account.userdel),
+    url(r'^userdel_ajax/$', account.userdel_ajax),
     url(r'^useredit_submit/$', account.useredit_submit),
     url(r'^logout/$', account.logout),
     url(r'^useredit_ajax/$', account.useredit_ajax),
@@ -33,6 +34,8 @@ urlpatterns = [
     url(r'^groupdel_(\d+)/$', account.groupdel),
 
     url(r'^table_manage/$', views.table_manage),
+    url(r'^table_edit_ajax/$', views.table_edit_ajax),
+    url(r'^table_del_ajax/$', views.table_del_ajax),
     url(r'^food_manage/$', views.food_manage),
     url(r'^foodtype_manage/$', views.foodtype_manage),
     url(r'^restaurant_order/$', views.restaurant_order),

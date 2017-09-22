@@ -27,7 +27,7 @@
                         <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
                             <td>{{ forloop.counter }}</td>
                              <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
-                             <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑</input> <a href="/back/userdel_{{ row.id }}/" onclick="userdel()">删除</a> </td>
+                             <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑|<a class="userdel">删除</a> </td>   {#href="/back/userdel_{{ row.id }}/"#}
                         </tr>
                         {% endfor %}
                 </table>
@@ -72,8 +72,25 @@
 
 <script>
 
-    function userdel() {
-        if (!confirm("确认要删除？")) {
+    $(".userdel").click(function () {
+        if (window.confirm("确认要删除？")) {
+            $.ajax({
+                url: "/back/userdel_ajax/",
+                type: "POST",
+                data: {id: $(this).parent().parent().attr("bid")},
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    if(obj.status){
+                        alert(obj.error);
+                        location.reload()
+                    }else {
+                        alert(obj.error);
+                    }
+                }
+            })}else{
             window.event.returnValue = false;
         }
     }
@@ -122,16 +139,13 @@
 
 
     function edit_submit() {
-        $.ajaxSetup({
-            beforeSend: function(xhr,settings){
-                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
-            }
-        });
-
         $.ajax({
             type: "post",
             url: "/back/useredit_submit/",
             data: $('.edit-modal').serialize(),
+            beforeSend: function(xhr,settings){
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+            },
             success: function (data) {
                 var obj = JSON.parse(data);
                 if(obj.status){

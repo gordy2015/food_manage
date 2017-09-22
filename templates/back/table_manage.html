@@ -7,7 +7,7 @@
 
             <div>
                 <h3>餐桌列表</h3>
-                <form>
+                <form action="/back/table_manage/" method="POST">
                     {% csrf_token %}
                     <input type="text" name="tablename" placeholder="桌名">
                     <input type="text" name="ordertime" placeholder="预定时间">
@@ -37,26 +37,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            {% for row in tm %}
+                        {% for row in tm %}
+                        <tr tid="{{ row.id }}">
                             <td>{{ forloop.counter }}</td>
                             <td>{{ row.tablename }}</td>
                             <td>{{ row.ts.tablestatus }}</td>
                             <td>{{ row.ordertime }}</td>
-                                <td><a class="tableedit">编辑</a> | <a class="tabledel">删除</a> </td>
-                            {% endfor %}
+                            <td><a class="tableedit">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
-
+            <div class="shade hide"></div>
             <div class="tableedit-modal hide">
                 <form id="tableedit_form">
-                    <input type="text" name="tablename">
-                    <input type="text" name="tablestatus">
-                    <input type="text" name="ordertime">
+                    <input type="hidden" name="tid">
+                    <input type="text" name="tablename" placeholder="桌名">
+                     <select name="tablestatus">
+                        {% for b in tst %}
+                        <option value={{ b.id }}>{{ b.tablestatus }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="ordertime" placeholder="预定时间">
                     <input type="button" value="确定修改" id="tableedit_confirm">
                     <input type="button" value="取消" class="tableedit_cancel">
+                    <p id="err_table_edit_ajax" style="color: red"></p>
                 </form>
             </div>
 
@@ -69,17 +75,61 @@
     <script>
         $(function () {
             $('.tableedit').click(function () {
-                $('.tableedit-modal').removeClass('hide');
+                $('.tableedit-modal,.shade').removeClass('hide');
+                var tid = $(this).parent().parent().attr("tid");
+                $('#tableedit_form').find('input[name="tid"]').val(tid);
 
-            })
+            });
             $('.tableedit_cancel').click(function () {
-                $('.tableedit-modal').addClass('hide')
-            })
-        })
+                $('.tableedit-modal,.shade').addClass('hide')
+                $('#err_table_manage_ajax').text('')
+            });
+
+
+        });
         
-        $(function () {
-            
+        $('#tableedit_confirm').click(function () {
+            $.ajax({
+                url: "/back/table_edit_ajax/",
+                type: "POST",
+                data: $('#tableedit_form').serialize(),
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.status);
+                    if(obj.status){
+                        location.reload()
+                    }else {
+                        $('#err_table_edit_ajax').text(obj.error)
+                    }
+                }
+            })
+        });
+
+        $('.tabledel').click(function () {
+            if (confirm("确认要删除？")) {
+                $.ajax({
+                    url: "/back/table_del_ajax/",
+                    type: "POST",
+                    data: {id: $(this).parent().parent().attr("tid")},
+                    beforeSend: function(xhr,settings){
+                        xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                    },
+                    success: function (data) {
+                        var obj = JSON.parse(data);
+                        if(obj.status){
+                            alert(obj.error);
+                            location.reload()
+                        }else {
+                            alert(obj.error);
+                        }
+                    }
+                })
+            }
         })
+       
     </script>
 
 

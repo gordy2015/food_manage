@@ -123,6 +123,25 @@ def userdel(request,nid):
     # return redirect('/back/user_info/')
     return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr,'group_list':group_list})
 
+@auth
+def userdel_ajax(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+        print(i)
+        w = models.user_info.objects.filter(id=i).delete()  # 有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
+        if w[0] == 1:
+            ret['error'] = '删除成功'
+            # print(w[0])
+        else:
+            ret['status'] = False
+            ret['error'] = '删除失败'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    return HttpResponse(json.dumps(ret))
+
 
 #编辑用户
 @auth
