@@ -15,13 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from backapp import views,account
+from backapp import views,account,search_article
 
 
 urlpatterns = [
     url(r'^index/', account.index),
     url(r'^user_info/$', account.userinfo),
-    url(r'^userdel_(\d+)/$', account.userdel),
+    # url(r'^userdel_(\d+)/$', account.userdel),
     url(r'^userdel_ajax/$', account.userdel_ajax),
     url(r'^useredit_submit/$', account.useredit_submit),
     url(r'^logout/$', account.logout),
@@ -39,5 +39,7 @@ urlpatterns = [
     url(r'^food_manage/$', views.food_manage),
     url(r'^foodtype_manage/$', views.foodtype_manage),
     url(r'^restaurant_order/$', views.restaurant_order),
+
+    url(r'^search_article/$', search_article.search_article)
 
 ]

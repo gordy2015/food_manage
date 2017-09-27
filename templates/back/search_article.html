@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>search_article</title>
+    <style>
+        .cate a{
+            display: inline-block;
+            padding: 3px 5px;
+            border: 1px solid #dddddd;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body class="cate">
+    <p>
+    <span><a>全部</a></span>
+    {% for c in category %}
+        <a id="{{ c.id }}">{{ c.caption }}</a>
+    {% endfor %}
+    </p>
+
+    <p>
+    <span><a>全部</a></span>
+    {% for m in article_type %}
+    <a id="{{ m.id }}"> {{ m.caption }}</a>
+    {% endfor %}
+    </p>
+
+    <table>
+    <tr>
+        <td>查询结果</td>
+    </tr>
+    {% for s in article %}
+        <tr href="{{ s.id }}">
+        <td>{{ s.title }} </td>
+        </tr>
+    {% endfor %}
+
+    </table>
+</body>
+</html>

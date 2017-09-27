@@ -39,7 +39,7 @@ def table_edit_ajax(request):
         t = request.POST.get('tablename')
         o = request.POST.get('ordertime')
         s = request.POST.get('tablestatus')
-        print(i,t,o,s)
+        # print(i,t,o,s)
         if t and o and s:
             dic = {'tablename':t, 'ordertime':o, 'ts_id':s}
             models.table_manage.objects.filter(id=i).update(**dic)

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.7/css/jquery.dataTables.css">
     <style>
         body{
             margin: 0;
@@ -41,7 +42,7 @@
             top:100px;
             left: 50%;
             z-index: 101;
-            border: 1px solid red;
+            border: 1px solid black;
             background: white;
             margin-left: -200px;
         }
@@ -53,14 +54,14 @@
     <div>
 
 
-        <div style="height: 48px;background-color: black;color: white">被玩坏的小鸟点餐系统
+        <div style="height: 48px;background-color: #2459a2;color: white">被玩坏的小鸟点餐系统
             {% if request.session.username %}
                 &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
                 &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
             {% endif %}
          </div>
 
-        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: brown;">
+        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: ghostwhite;">
             <a class="menu" href="/back/user_info/">用户管理</a>
             <a class="menu" href="/back/group_info/">用户组管理</a>
             <a class="menu" href="/back/table_manage/">餐桌管理</a>
@@ -74,6 +75,8 @@
 
     <script src="/static/jquery-1.12.4.js"></script>
     <script src="/static/jquery.cookie.js"></script>
+    <!-- DataTables -->
+    <script type="text/javascript" charset="utf8" src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.js"></script>
     {% block js %}{% endblock %}
 </body>
 </html>

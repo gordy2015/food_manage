@@ -10,7 +10,7 @@
                 <form action="/back/table_manage/" method="POST">
                     {% csrf_token %}
                     <input type="text" name="tablename" placeholder="桌名">
-                    <input type="text" name="ordertime" placeholder="预定时间">
+                    <input type="datetime-local" name="ordertime" placeholder="预定时间">
                     <select name="tablestatus">
                         {% for b in tst %}
                         <option value={{ b.id }}>{{ b.tablestatus }}</option>
@@ -19,35 +19,32 @@
                     <input type="submit" value="添加" id="tableadd">
                 </form>
             </div>
-            <div>
-                <form>
-                    <input type="text" name="search">
-                    <input type="submit" value="搜索">
-                </form>
-            </div>
-            <div>
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <td>编号</td>
-                            <td>桌名</td>
-                            <td>状态</td>
-                            <td>预定时间</td>
-                            <td>操作</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in tm %}
-                        <tr tid="{{ row.id }}">
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ row.tablename }}</td>
-                            <td>{{ row.ts.tablestatus }}</td>
-                            <td>{{ row.ordertime }}</td>
-                            <td><a class="tableedit">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+
+            <div class="col_2_3_right">
+                <div class="index_viewport">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <thead>
+                            <tr>
+                                <td>编号</td>
+                                <td>桌名</td>
+                                <td>状态</td>
+                                <td>预定时间</td>
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in tm %}
+                            <tr tid="{{ row.id }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ row.tablename }}</td>
+                                <td>{{ row.ts.tablestatus }}</td>
+                                <td>{{ row.ordertime }}</td>
+                                <td><a class="tableedit">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="shade hide"></div>
             <div class="tableedit-modal hide">
@@ -59,7 +56,7 @@
                         <option value={{ b.id }}>{{ b.tablestatus }}</option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="ordertime" placeholder="预定时间">
+                    <input type="datetime-local" name="ordertime" placeholder="预定时间">
                     <input type="button" value="确定修改" id="tableedit_confirm">
                     <input type="button" value="取消" class="tableedit_cancel">
                     <p id="err_table_edit_ajax" style="color: red"></p>
@@ -129,6 +126,10 @@
                 })
             }
         })
+
+        $(document).ready(function() {
+            $('#example').dataTable();
+        });
        
     </script>
 

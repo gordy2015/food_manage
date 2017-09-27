@@ -3,8 +3,7 @@
 {% block title %} 用户组管理 {% endblock %}
 {% block body %}
      <div class="cont">
-            <h3>添加用户组</h3>
-            <p>{{ add_err }}</p>
+            <h3>添加用户组 <span style="font-size:14px;color: red">{{ add_err }}</span></h3>
             <form method="POST" action="/back/group_info/">
                 {% csrf_token %}
                 <input type="text" name="groupname" placeholder="新用户组"/>
@@ -21,36 +20,45 @@
                 </form>
             </div>
 
-            <h3>用户组列表</h3>
-                <div>{{ groupdel_err }}</div>
-            <ul>
-                {% for row in group_list %}
-                    <li>
-                        {{ forloop.counter }}|
-                        <a did="/back/groupdetail_{{ row.id }}/">{{ row.groupname }}</a>
-                        |<a gid="{{ row.id }}" class="groupedit">编辑</a>
-                        |<a href="/back/groupdel_{{ row.id }}/" onclick="groupdel()">删除</a>
-                    </li>
-                {% endfor %}
-            </ul>
+          <h3>用户组列表 <span style="font-size:14px;color: red">{{ groupdel_err }}</span> </h3>
 
-        </div>
+            <div class="col_2_3_right">
+                <div class="index_viewport">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                 <thead>
+                        <tr>
+                            <td>编号</td>
+                            <td>用户组</td>
+                            <td>操作</td>
+                        </tr>
+                 </thead>
+                 <tbody>
+                    {% for row in group_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td did="/back/groupdetail_{{ row.id }}/">{{ row.groupname }}</td>
+                        <td gid="{{ row.id }}" class="groupedit">编辑
+                        <a href="/back/groupdel_{{ row.id }}/" onclick="groupdel()">删除</a></td>
+                    </tr>
+                    {% endfor %}
+
+                  </tbody>
+                  </table>
+                </div>
+            </div>
+     </div>
 {% endblock %}
 
 {% block js %}
 <script>
 
-    function groupdel() {
-        if (!confirm("确认要删除？")) {
-            window.event.returnValue = false;
-        }
-    }
 
     $(function () {
         $('.groupedit').click(function () {
             $('#groupedit_form').removeClass('hide')
             var gid = $(this).attr('gid')
-            var groupname = $(this).siblings().eq(0).text()
+            var groupname = $(this).siblings().eq(1).text()
+            console.log(groupname)
             $('#groupedit_form').find('input[name="gid"]').val(gid)
             $('#groupedit_form').find('input[name="groupname"]').val(groupname)
         })
@@ -58,7 +66,7 @@
             $('#groupedit_form').addClass('hide')
         })
 
-    })
+    });
 
     function myfun() {
         {
@@ -70,9 +78,25 @@
             }
         }
         /*用window.onload调用myfun()*/
-    }
-    window.onload = setTimeout(myfun,2000);
+    };
+{#自动执行函数#}
+{#写法1    window.onload = setTimeo(myfun,2000);#}
 
+{#写法2    $(function () {#}
+{#        setTimeout(myfun,2000);#}
+{#    });#}
+
+{#    写法3#}
+    $(document).ready(function() {
+            setTimeout(myfun,2000);
+            $('#example').dataTable();
+    });
+
+
+    function groupdel() {
+        if (!confirm("确认要删除？")) {
+            window.event.returnValue = false;
+    }};
 </script>
 
 

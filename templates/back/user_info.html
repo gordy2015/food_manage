@@ -3,9 +3,7 @@
 {% block title %} 用户组管理 {% endblock %}
 {% block body %}
     <div class="cont">
-            <h3>添加用户</h3>
-
-        <p>{{ useradd_err }}</p>
+        <h3>添加用户 <span style="font-size:14px;color: red">{{ useradd_err }}</span></h3>
         <form action="/back/user_info/" method="POST">
             {% csrf_token %}
             {{ obj.username }}
@@ -16,21 +14,31 @@
             <input type="submit" value="添加">
         </form>
 
-            <h3>用户列表</h3> <span>{{ delerr }}</span>
-                <table border="1">
+            <h3>用户列表</h3>
+
+            <div class="col_2_3_right">
+                <div class="index_viewport">
+                <table id="example" cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <thead>
                         <tr>
-                        <th>编号</th>
-                        <th>用户名</th>
-                        <th>操作</th>
+                            <td>编号</td>
+                            <td>用户名</td>
+                            <td>操作</td>
                         </tr>
-                        {% for row in user_list %}
-                        <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
-                            <td>{{ forloop.counter }}</td>
-                             <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
-                             <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑|<a class="userdel">删除</a> </td>   {#href="/back/userdel_{{ row.id }}/"#}
-                        </tr>
-                        {% endfor %}
+                    </thead>
+                    <tbody>
+                    {% for row in user_list %}
+                    <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
+                         <td>{{ forloop.counter }}</td>
+                         <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
+                         <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑
+                             <a class="userdel">删除</a> </td>   {#href="/back/userdel_{{ row.id }}/"#}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
                 </table>
+                </div>
+            </div>
 
 
             <div>
@@ -77,7 +85,7 @@
             $.ajax({
                 url: "/back/userdel_ajax/",
                 type: "POST",
-                data: {id: $(this).parent().parent().attr("bid")},
+                data: {id: $(this).parent().parent().attr("bid"), username: $(this).parent().parent().children().eq(1).text().replace(/^\s+|\s+$/g,"")},
                 beforeSend: function(xhr,settings){
                     xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
                 },
@@ -85,7 +93,7 @@
                     var obj = JSON.parse(data);
                     if(obj.status){
                         alert(obj.error);
-                        location.reload()
+                        location.href = '/back/user_info'
                     }else {
                         alert(obj.error);
                     }
@@ -93,7 +101,7 @@
             })}else{
             window.event.returnValue = false;
         }
-    }
+    });
 
     $(function () {
         $('.useredit').click(function () {
@@ -134,8 +142,8 @@
 {#                console.log(obj)#}
                 $("#grouptype2").val(obj.data.grouptype);
             }
-        })
-    }
+        });
+    };
 
 
     function edit_submit() {
@@ -155,21 +163,13 @@
                     $('#useredit_err').text(obj.error);
                 }
             }
-        })
-    }
+        });
+    };
 
-    function myfun() {
-        {
-            var c = self.location.href;
-            var t = c.indexOf("/back/userdel_");
-            if ( t > 10 ) {
-                var newhref = 'http://' + self.location.host + '/back/user_info/';
-                top.location.href = newhref
-            }
-        }
-        /*用window.onload调用myfun()*/
-    }
-    window.onload = setTimeout(myfun,2000);
+    $(document).ready(function() {
+            $('#example').dataTable();
+    });
+
 
 </script>
 {% endblock %}

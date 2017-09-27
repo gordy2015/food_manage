@@ -102,42 +102,51 @@ def userinfo(request):
 
 
 #删除用户
-@auth
-def userdel(request,nid):
-    obj = user_infoForm()
-    user_list = models.user_info.objects.all()
-    group_list = models.user_group.objects.all()
-    u = request.session.get('username')
-    a = models.user_info.objects.filter(id=nid)
-    print(a)
-    for i in a:
-        s = i.username
-        print(s)
-    if s == u:
-        delerr = '删除失败! 不能删除正在登陆的用户: %s, 请退出登陆后由管理员帐户删除' %s
-    elif s == 'root':
-        delerr = '删除失败! 不能删除管理员帐户: root'
-    else:
-        w = models.user_info.objects.filter(id=nid).delete()
-        delerr = '用户: ' + s + '删除成功'
-    # return redirect('/back/user_info/')
-    return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr,'group_list':group_list})
+# @auth
+# def userdel(request,nid):
+#     obj = user_infoForm()
+#     user_list = models.user_info.objects.all()
+#     group_list = models.user_group.objects.all()
+#     u = request.session.get('username')
+#     a = models.user_info.objects.filter(id=nid)
+#     print(a)
+#     for i in a:
+#         s = i.username
+#         print(s)
+#     if s == u:
+#         delerr = '删除失败! 不能删除正在登陆的用户: %s, 请退出登陆后由管理员帐户删除' %s
+#     elif s == 'root':
+#         delerr = '删除失败! 不能删除管理员帐户: root'
+#     else:
+#         w = models.user_info.objects.filter(id=nid).delete()
+#         delerr = '用户: ' + s + '删除成功'
+#     # return redirect('/back/user_info/')
+#     return render(request, 'back/user_info.html',{'obj': obj,'user_list': user_list,'delerr': delerr,'group_list':group_list})
 
 @auth
 def userdel_ajax(request):
     ret = {'status': True, 'error': None, 'data': None}
     try:
         i = request.POST.get('id')
-        print(i)
-        w = models.user_info.objects.filter(id=i).delete()  # 有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
-        if w[0] == 1:
-            ret['error'] = '删除成功'
-            # print(w[0])
-        else:
+        u = request.POST.get('username')
+        s = request.session.get('username')
+        # print(i,len(u),len(s),type(u))
+        if u == s:
             ret['status'] = False
-            ret['error'] = '删除失败'
+            ret['error'] = '删除失败! 不能删除正在登陆的用户: %s, 请退出登陆后由管理员帐户删除' %s
+        elif u == 'root':
+            ret['status'] = False
+            ret['error'] = '删除失败! 不能删除管理员帐户: root'
+        else:
+            w = models.user_info.objects.filter(id=i).delete()  # 有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
+            if w[0] == 1:
+                # print(w)
+                ret['error'] = '删除成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '删除失败'
     except Exception as e:
-        print(e)
+        # print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
     return HttpResponse(json.dumps(ret))
@@ -270,9 +279,9 @@ def groupedit(request):
 def groupdel(request,nid):
     w = models.user_info.objects.all().filter(grouptype_id=nid).first()
     if w:
-        groupdel_err = '无法删除，此用户组包含用户'
+        groupdel_err = '删除失败，此用户组包含用户'
     else:
-        groupdel_err = '已删除此用户组'
+        groupdel_err = '此用户组删除成功'
         models.user_group.objects.all().filter(id=nid).delete()
     group_list = models.user_group.objects.all()
     return render(request, 'back/user_group.html', {'group_list': group_list, 'groupdel_err': groupdel_err})
