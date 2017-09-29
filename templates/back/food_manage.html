@@ -5,5 +5,139 @@
 {% block body %}
           <div class="cont">
 
+            <div>
+                <h3>菜品列表</h3>
+                <form action="/back/food_manage/" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="foodname" placeholder="菜名">
+                    <input type="text" name="price" placeholder="价格">
+                    <input type="text" name="vip_price" placeholder="会员价格">
+                    <select name="foodtypename">
+                        {% for row in foodtype %}
+                            <option value="{{ row.id }}">{{ row.foodtypename }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="添加" id="tableadd">
+                </form>
+            </div>
+
+            <div class="col_2_3_right">
+                <div class="index_viewport">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <thead>
+                            <tr>
+                                <td>菜品编号</td>
+                                <td>菜名</td>
+                                <td>所属菜系</td>
+                                <td>价格</td>
+                                <td>会员价格</td>
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbo>
+                            {% for row in food %}
+                            <tr tid="{{ row.id }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ row.foodname }}</td>
+                                <td>{{ row.foodtype.foodtypename }}</td>
+                                <td>{{ row.price }}</td>
+                                <td>{{ row.vip_price }}</td>
+                                <td><a class="foodedit">编辑</a>| <a class="foodtypedel">删除</a></td><span id="err_food_del_ajax"></span>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="shade hide"></div>
+            <div class="foodedit-modal hide">
+                <form id="foodedit_form">
+                    <input type="hidden" name="tid">
+                    <input type="text" name="foodname" placeholder="菜名">
+                    <input type="text" name="price" placeholder="价格">
+                    <input type="text" name="vip_price" placeholder="会员价格">
+                    <select name="foodtypename">
+                        {% for row in foodtype %}
+                            <option value="{{ row.id }}">{{ row.foodtypename }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="button" value="确定修改" id="foodedit_confirm">
+                    <input type="button" value="取消" class="foodedit_cancel">
+                    <p id="err_food_edit_ajax" style="color: red"></p>
+                </form>
+            </div>
+
         </div>
+{% endblock %}
+
+
+
+{% block js %}
+    <script>
+        $(function () {
+            $('.foodedit').click(function () {
+                $('.foodedit-modal,.shade').removeClass('hide');
+                var tid = $(this).parent().parent().attr("tid");
+                $('#foodedit_form').find('input[name="tid"]').val(tid);
+
+            });
+            $('.foodedit_cancel').click(function () {
+                $('.foodedit-modal,.shade').addClass('hide')
+                $('#err_food_manage_ajax').text('')
+            });
+
+
+        });
+
+{#        $('#foodtypeedit_confirm').click(function () {#}
+{#            $.ajax({#}
+{#                url: "/back/table_edit_ajax/",#}
+{#                type: "POST",#}
+{#                data: $('#foodtypeedit_form').serialize(),#}
+{#                beforeSend: function(xhr,settings){#}
+{#                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));#}
+{#                },#}
+{#                success: function (data) {#}
+{#                    var obj = JSON.parse(data);#}
+{#                    console.log(obj.status);#}
+{#                    if(obj.status){#}
+{#                        location.reload()#}
+{#                    }else {#}
+{#                        $('#err_foodtype_edit_ajax').text(obj.error)#}
+{#                    }#}
+{#                }#}
+{#            })#}
+{#        });#}
+
+        $('.fooddel').click(function () {
+            if (confirm("确认要删除？")) {
+                $.ajax({
+                    url: "/back/food_del_ajax/",
+                    type: "POST",
+                    data: {id: $(this).parent().parent().attr("tid")},
+                    beforeSend: function(xhr,settings){
+                        xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                    },
+                    success: function (data) {
+                        var obj = JSON.parse(data);
+                        if(obj.status){
+                            alert(obj.error);
+                            location.reload()
+                        }else {
+                            alert(obj.error);
+                        }
+                    }
+                })
+            }
+        });
+
+
+
+
+        $(document).ready(function() {
+            $('#example').dataTable();
+        });
+
+    </script>
+
 {% endblock %}

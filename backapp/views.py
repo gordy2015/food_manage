@@ -75,17 +75,23 @@ def table_del_ajax(request):
 #菜系管理
 @auth
 def foodtype_manage(request):
-    return render(request, 'back/foodtype_manage.html')
+    foodtype = models.foodtype_manage.objects.all()
+    # print(foodtype.values('foodtypename'))
+    return render(request, 'back/foodtype_manage.html',{'foodtype':foodtype})
 
 
 #菜品管理
 @auth
 def food_manage(request):
-    return render(request, 'back/food_manage.html')
+    food = models.food_manage.objects.all()
+    foodtype = models.foodtype_manage.objects.all()
+    return render(request, 'back/food_manage.html',{'food':food,'foodtype':foodtype})
 
 
 # 餐厅订单
 @auth
 def restaurant_order(request):
-    return render(request, 'back/restaurant_order.html')
+    order = models.order.objects.all()
+    print(order.values('all_price'))
+    return render(request, 'back/restaurant_order.html',{'order':order})
 
