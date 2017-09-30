@@ -6,14 +6,14 @@
           <div class="cont">
 
             <div>
-                <h3>菜系列表</h3>
+                <h3>添加菜系</h3>
                 <form action="/back/foodtype_manage/" method="POST">
                     {% csrf_token %}
                     <input type="text" name="ordertime" placeholder="菜系名称">
                     <input type="submit" value="添加" id="tableadd">
                 </form>
             </div>
-
+            <h3>菜系列表</h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
                     <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">

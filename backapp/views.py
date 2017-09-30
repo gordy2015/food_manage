@@ -87,11 +87,105 @@ def food_manage(request):
     foodtype = models.foodtype_manage.objects.all()
     return render(request, 'back/food_manage.html',{'food':food,'foodtype':foodtype})
 
+#添加菜品
+@auth
+def food_add_ajax(request):
+    ret = {'status':True, 'error':None, 'data':None}
+    try:
+        f = request.POST.get('foodname')
+        p = request.POST.get('price')
+        v = request.POST.get('vip_price')
+        t = request.POST.get('foodtypename')
+        if f and p and v and t:
+            fo = {'foodname':f,'price':p,'vip_price':v,'foodtype_id':t}
+            print(fo)
+            w = models.food_manage.objects.create(**fo) #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
+            if w:
+                ret['error'] = '添加成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '添加失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '内容不能为空'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    return HttpResponse(json.dumps(ret))
+
+@auth
+def food_del_ajax(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+        print(i)
+        w = models.food_manage.objects.all().filter(id=i).delete()
+        if w[0] == 1:
+            ret['error'] = '删除成功'
+        else:
+            ret['status'] = False
+            ret['error'] = '删除失败'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    print(ret)
+    return HttpResponse(json.dumps(ret))
+
 
 # 餐厅订单
 @auth
 def restaurant_order(request):
     order = models.order.objects.all()
-    print(order.values('all_price'))
-    return render(request, 'back/restaurant_order.html',{'order':order})
+    table = models.table_manage.objects.all()
+    od = models.order_detail.objects.all()
+    # print(order.values('all_price'))
+    fo = models.food_manage.objects.all()
+
+    # for s in od:
+    #     print(s.food_cho.foodname,s.food_count)
+
+
+    # for m in od:
+    #     # print(m.order_d.id)
+    #     for s in m.order_d.all():
+    #         print(s.all_price,s.orderstatus,s.tablename.tablename,s.tablename.ordertime)
+    return render(request, 'back/restaurant_order.html',{'order':order,'table':table,'od':od,'fo':fo})
+
+
+@auth
+def order_add_ajax(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        t = request.POST.get('tablename')
+        f = request.POST.get('food_cho')
+        fc = request.POST.get('food_count')
+        s = request.POST.get('status')
+        print(t,f, fc, s)
+        if t:
+            fo = {'food_cho_id': f, 'food_count': fc}
+            models.order_detail.objects.create(**fo)
+            q = models.order.objects.all().filter(tablename_id=t).values('id').first()
+            print('result: %s %s' % (type(q), q['id']))
+            if q:
+                new_fc = models.order.objects.get(id=q['id'])
+                order_detaild = models.order_detail.objects.all()
+                print('n:%s , nd: %s' %(new_fc, order_detaild))
+                order_detaild.order_d.add(new_fc)
+                # w = new_order.order_d.add(**new_order)
+                # if w:
+                #     ret['error'] = '添加成功'
+                # else:
+                #     ret['status'] = False
+                #     ret['error'] = '添加失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '内容不能为空'
+
+    except Exception as e:
+        print('e:%s' %e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    return HttpResponse(json.dumps(ret))
 

@@ -6,21 +6,27 @@
           <div class="cont">
 
             <div>
-                <h3>菜品列表</h3>
-                <form action="/back/restaurant_order/" method="POST">
+                <h3>添加订单</h3>
+                <form id="orderadd_form">
                     {% csrf_token %}
-                    <input type="text" name="ordername" placeholder="菜名">
-                    <input type="text" name="price" placeholder="价格">
-                    <input type="text" name="vip_price" placeholder="会员价格">
-                    <select name="foodtypename">
-                        {% for row in foodtype %}
-                            <option value="{{ row.id }}">{{ row.foodtypename }}</option>
+                    <select name="tablename">
+                        {% for row in table %}
+                        <option value="{{ row.id }}">{{ row.tablename }}</option>
                         {% endfor %}
                     </select>
-                    <input type="submit" value="添加" id="tableadd">
+                    <select name="food_cho">
+                        {% for r in fo %}
+                            <option value="{{ r.id }}">
+                                {{ r.foodname }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="food_count" placeholder="数量">
+                    <input type="text" name="status" placeholder="状态">
+                    <input type="button" value="添加" id="orderadd">
                 </form>
             </div>
-
+            <h3>餐厅订单</h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
                     <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -34,14 +40,14 @@
                                 <td>操作</td>
                             </tr>
                         </thead>
-                        <tbo>
+                        <tbody>
                             {% for row in order %}
                             <tr tid="{{ row.id }}">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ row.tablename.tablename }}</td>
                                 <td>{{ row.tablename.ordertime }}</td>
                                 <td>{{ row.all_price }}</td>
-                                <td>{{ row.status }}</td>
+                                <td>{{ row.orderstatus }}</td>
                                 <td><a class="orderedit">详细</a>| <a class="orderdel">结算</a></td><span id="err_order_del_ajax"></span>
                             </tr>
                             {% endfor %}
@@ -50,19 +56,31 @@
                 </div>
             </div>
             <div class="shade hide"></div>
-            <div class="orderdit-modal hide">
+            <div class="orderedit-modal hide">
                 <form id="orderedit_form">
-                    <input type="hidden" name="tid">
-                    <input type="text" name="foodname" placeholder="菜名">
-                    <input type="text" name="price" placeholder="价格">
-                    <input type="text" name="vip_price" placeholder="会员价格">
-                    <select name="foodtypename">
-                        {% for row in foodtype %}
-                            <option value="{{ row.id }}">{{ row.foodtypename }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="button" value="确定修改" id="orderedit_confirm">
-                    <input type="button" value="取消" class="orderedit_cancel">
+                    <table id="mexample"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <thead>
+                            <tr>
+                                <td>编号</td>
+                                <td>菜名</td>
+                                <td>单价</td>
+                                <td>数量</td>
+                                <td>操作</td>
+                            </tr>
+                    </thead>
+                    <tbody>
+                    {% for s in od %}
+                            <tr>
+                            <td>{{ s.food_cho.id }}</td>
+                            <td>{{ s.food_cho.foodname }}</td>
+                            <td>{{ s.food_cho.price }}</td>
+                            <td>{{ s.food_count }}</td>
+                            <td><a id="orderedit_confirm">编辑</a>
+                               <a class="orderedit_cancel">取消</a></td>
+                            </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
                     <p id="err_order_edit_ajax" style="color: red"></p>
                 </form>
             </div>
@@ -87,6 +105,28 @@
             });
 
 
+        });
+
+
+
+        $('#orderadd').click(function () {
+            $.ajax({
+                url: "/back/order_add_ajax/",
+                type: "POST",
+                data: $('#orderadd_form').serialize(),
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.status);
+                    if(obj.status){
+                        location.reload()
+                    }else {
+{#                        $('#err_foodtype_edit_ajax').text(obj.error)#}
+                    }
+                }
+            })
         });
 
 {#        $('#foodtypeedit_confirm').click(function () {#}
@@ -126,7 +166,7 @@
                         }else {
                             alert(obj.error);
                         }
-                    }
+                   }
                 })
             }
         });
@@ -136,6 +176,8 @@
 
         $(document).ready(function() {
             $('#example').dataTable();
+            $('#mexample').dataTable();
+
         });
 
     </script>

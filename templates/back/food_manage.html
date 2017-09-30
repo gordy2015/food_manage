@@ -6,8 +6,8 @@
           <div class="cont">
 
             <div>
-                <h3>菜品列表</h3>
-                <form action="/back/food_manage/" method="POST">
+                <h3>添加菜品</h3>
+                <form id="foodadd_form">
                     {% csrf_token %}
                     <input type="text" name="foodname" placeholder="菜名">
                     <input type="text" name="price" placeholder="价格">
@@ -17,10 +17,10 @@
                             <option value="{{ row.id }}">{{ row.foodtypename }}</option>
                         {% endfor %}
                     </select>
-                    <input type="submit" value="添加" id="tableadd">
+                    <input type="button" value="添加" id="foodadd">
                 </form>
             </div>
-
+            <h3>菜品列表</h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
                     <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -42,7 +42,7 @@
                                 <td>{{ row.foodtype.foodtypename }}</td>
                                 <td>{{ row.price }}</td>
                                 <td>{{ row.vip_price }}</td>
-                                <td><a class="foodedit">编辑</a>| <a class="foodtypedel">删除</a></td><span id="err_food_del_ajax"></span>
+                                <td><a class="foodedit">编辑</a>| <a class="fooddel">删除</a></td><span id="err_food_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -85,29 +85,48 @@
                 $('.foodedit-modal,.shade').addClass('hide')
                 $('#err_food_manage_ajax').text('')
             });
-
-
         });
 
-{#        $('#foodtypeedit_confirm').click(function () {#}
-{#            $.ajax({#}
-{#                url: "/back/table_edit_ajax/",#}
-{#                type: "POST",#}
-{#                data: $('#foodtypeedit_form').serialize(),#}
-{#                beforeSend: function(xhr,settings){#}
-{#                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));#}
-{#                },#}
-{#                success: function (data) {#}
-{#                    var obj = JSON.parse(data);#}
-{#                    console.log(obj.status);#}
-{#                    if(obj.status){#}
-{#                        location.reload()#}
-{#                    }else {#}
+        $('#foodadd').click(function () {
+            $.ajax({
+                url: "/back/food_add_ajax/",
+                type: "POST",
+                data: $('#foodadd_form').serialize(),
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.status);
+                    if(obj.status){
+                        location.reload()
+                    }else {
 {#                        $('#err_foodtype_edit_ajax').text(obj.error)#}
-{#                    }#}
-{#                }#}
-{#            })#}
-{#        });#}
+                    }
+                }
+            })
+        });
+
+
+        $('#foodedit_confirm').click(function () {
+            $.ajax({
+                url: "/back/table_edit_ajax/",
+                type: "POST",
+                data: $('#foodtypeedit_form').serialize(),
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.status);
+                    if(obj.status){
+                        location.reload()
+                    }else {
+                        $('#err_foodtype_edit_ajax').text(obj.error)
+                    }
+                }
+            })
+        });
 
         $('.fooddel').click(function () {
             if (confirm("确认要删除？")) {
