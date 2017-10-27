@@ -42,6 +42,7 @@ urlpatterns = [
 
     url(r'^foodtype_manage/$', views.foodtype_manage),
     url(r'^restaurant_order/$', views.restaurant_order),
+    url(r'^restaurant_order-(\d+)/$', views.restaurant_order),
     url(r'^order_add_ajax/$', views.order_add_ajax),
 
     url(r'^search_article/$', search_article.search_article)

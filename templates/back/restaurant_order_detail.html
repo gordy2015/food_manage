@@ -1,11 +1,11 @@
 {% extends 'back/master.html' %}
 
-{% block title %} 餐厅订单 {% endblock %}
+{% block title %} 餐厅订单详情 {% endblock %}
 
 {% block body %}
           <div class="cont">
             <div>
-                <h3>添加订单</h3>
+                <h3>订单详情</h3>
                 <form id="orderadd_form">
                     {% csrf_token %}
                     <select name="tablename">
@@ -47,7 +47,7 @@
                                 <td>{{ row.tablename.ordertime }}</td>
                                 <td>{{ row.all_price }}</td>
                                 <td>{{ row.orderstatus }}</td>
-                                <td><a href="restaurant_order-{{ row.id }}">详细</a>| <a class="orderdel">结算</a></td><span id="err_order_del_ajax"></span>
+                                <td><a class="orderedit">详细</a>| <a class="orderdel">结算</a></td><span id="err_order_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>
