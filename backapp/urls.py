@@ -36,11 +36,16 @@ urlpatterns = [
     url(r'^table_manage/$', views.table_manage),
     url(r'^table_edit_ajax/$', views.table_edit_ajax),
     url(r'^table_del_ajax/$', views.table_del_ajax),
+
     url(r'^food_manage/$', views.food_manage),
     url(r'^food_add_ajax/$', views.food_add_ajax),
     url(r'^food_del_ajax/$', views.food_del_ajax),
 
     url(r'^foodtype_manage/$', views.foodtype_manage),
+    url(r'^foodtype_add_ajax/$', views.foodtype_add_ajax),
+    url(r'^foodtype_edit_ajax/$', views.foodtype_edit_ajax),
+    url(r'^foodtype_del_ajax/$', views.foodtype_del_ajax),
+
     url(r'^restaurant_order/$', views.restaurant_order),
     url(r'^restaurant_order-(\d+)/$', views.restaurant_order),
     url(r'^order_add_ajax/$', views.order_add_ajax),

@@ -7,9 +7,9 @@
 
             <div>
                 <h3>添加菜系</h3>
-                <form action="/back/foodtype_manage/" method="POST">
+                <form id=foodtype_add_form action="/back/foodtype_manage/" method="POST">
                     {% csrf_token %}
-                    <input type="text" name="ordertime" placeholder="菜系名称">
+                    <input type="text" name="foodtypename" placeholder="菜系名称">
                     <input type="submit" value="添加" id="tableadd">
                 </form>
             </div>
@@ -69,25 +69,48 @@
 
         });
 
-{#        $('#foodtypeedit_confirm').click(function () {#}
-{#            $.ajax({#}
-{#                url: "/back/table_edit_ajax/",#}
-{#                type: "POST",#}
-{#                data: $('#foodtypeedit_form').serialize(),#}
-{#                beforeSend: function(xhr,settings){#}
-{#                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));#}
-{#                },#}
-{#                success: function (data) {#}
-{#                    var obj = JSON.parse(data);#}
-{#                    console.log(obj.status);#}
-{#                    if(obj.status){#}
-{#                        location.reload()#}
-{#                    }else {#}
-{#                        $('#err_foodtype_edit_ajax').text(obj.error)#}
-{#                    }#}
-{#                }#}
-{#            })#}
-{#        });#}
+        $('#tableadd').click(function () {
+            $.ajax({
+                url: "/back/foodtype_add_ajax/",
+                type: "POST",
+                data: $('#foodtype_add_form').serialize(),
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    if(obj.status){
+                        alert(obj.error);
+                        location.reload()
+                    }else {
+                        alert(obj.error);
+                    }
+                }
+            })
+        });
+
+
+
+
+        $('#foodtypeedit_confirm').click(function () {
+            $.ajax({
+                url: "/back/foodtype_edit_ajax/",
+                type: "POST",
+                data: $('#foodtypeedit_form').serialize(),
+                beforeSend: function(xhr,settings){
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.status);
+                    if(obj.status){
+                        location.reload()
+                    }else {
+                        $('#err_foodtype_edit_ajax').text(obj.error)
+                    }
+                }
+            })
+        });
 
         $('.foodtypedel').click(function () {
             if (confirm("确认要删除？")) {

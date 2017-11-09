@@ -79,6 +79,77 @@ def foodtype_manage(request):
     # print(foodtype.values('foodtypename'))
     return render(request, 'back/foodtype_manage.html',{'foodtype':foodtype})
 
+@auth
+def foodtype_add_ajax(request):
+    ret = {'status':True, 'error':None, 'data':None}
+    try:
+        f = request.POST.get('foodtypename')
+        if f:
+            w = models.foodtype_manage.objects.create(foodtypename=f)
+            if w:
+                ret['error'] = '添加成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '添加失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '内容不能为空'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    # print(ret)
+    return HttpResponse(json.dumps(ret))
+
+
+
+@auth
+def foodtype_edit_ajax(request):
+    ret = {'status':True, 'error':None, 'data':None}
+    try:
+        i = request.POST.get('tid')
+        f = request.POST.get('foodtypename')
+        if f:
+            w = models.foodtype_manage.objects.filter(id=i).update(foodtypename=f)
+            if w:
+                ret['error'] = '修改成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '修改失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '内容不能为空'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    # print(ret)
+    return HttpResponse(json.dumps(ret))
+
+@auth
+def foodtype_del_ajax(request):
+    ret = {'status':True, 'error':None, 'data':None}
+    try:
+        i = request.POST.get('id')
+        print(i)
+        if i:
+            w = models.foodtype_manage.objects.filter(id=i).delete()
+            if w:
+                ret['error'] = '删除成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '删除失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '内容不能为空'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    print(ret)
+    return HttpResponse(json.dumps(ret))
+
+
 
 #菜品管理
 @auth
