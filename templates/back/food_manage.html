@@ -111,7 +111,6 @@
 
 
         function foodedit(id) {
-            console.log(id)
             $('.foodedit-modal,.shade').removeClass('hide');
             $('#foodedit_form').find('input[name="tid"]').val(id);   //这里给input[name="tid"] 赋值是为了给foodedit_confirm提交时取得id值
             $.ajax({
@@ -127,6 +126,7 @@
                 },
                 success: function (data) {
                     var obj = JSON.parse(data);
+                    console.log(obj.data)
                     // 实现点“编辑” 会自动赋值原有的值
                     $('#foodname2').val(obj.data.foodname);
                     $("#price2").val(obj.data.price);

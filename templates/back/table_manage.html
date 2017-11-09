@@ -40,7 +40,7 @@
                                 <td>{{ row.tablename }}</td>
                                 <td>{{ row.ts.tablestatus }}</td>
                                 <td>{{ row.ordertime }}</td>
-                                <td><a class="tableedit">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
+                                <td><a class="tableedit" onclick="tableedit({{ row.id }})">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -51,33 +51,33 @@
             <div class="tableedit-modal hide">
                 <form id="tableedit_form">
                     <input type="hidden" name="tid">
-                    <input type="text" name="tablename" placeholder="桌名">
-                     <select name="tablestatus">
-                        {% for b in tst %}
-                        <option value={{ b.id }}>{{ b.tablestatus }}</option>
+                    <input type="text" name="tablename" id="tablename2" placeholder="桌名">
+                     <select name="tablestatus" id="tablestatus2">
+                        {% for row in tst %}
+                        <option value={{ row.id }}>{{ row.tablestatus }}</option>
                         {% endfor %}
                     </select>
-                    <input type="datetime-local" name="ordertime" placeholder="预定时间">
+                    <input type="datetime-local" id="ordertime2" name="ordertime" placeholder="预定时间">
                     <input type="button" value="确定修改" id="tableedit_confirm">
                     <input type="button" value="取消" class="tableedit_cancel">
                     <p id="err_table_edit_ajax" style="color: red"></p>
                 </form>
             </div>
-
-
         </div>
 {% endblock %}
+
 
 {% block js %}
 
     <script>
         $(function () {
-            $('.tableedit').click(function () {
-                $('.tableedit-modal,.shade').removeClass('hide');
-                var tid = $(this).parent().parent().attr("tid");
-                $('#tableedit_form').find('input[name="tid"]').val(tid);
 
-            });
+{#            $('.tableedit').click(function () {#}
+{#                $('.tableedit-modal,.shade').removeClass('hide');#}
+{#                var tid = $(this).parent().parent().attr("tid");#}
+{#                $('#tableedit_form').find('input[name="tid"]').val(tid);#}
+{#            });#}
+
             $('.tableedit_cancel').click(function () {
                 $('.tableedit-modal,.shade').addClass('hide')
                 $('#err_table_manage_ajax').text('')
@@ -85,10 +85,35 @@
 
 
         });
-        
+
+        function tableedit(id) {
+            $('.tableedit-modal,.shade').removeClass('hide');
+            $('#tableedit_form').find('input[name="tid"]').val(id);   //这里给input[name="tid"] 赋值是为了给tableedit_confirm提交时取得id值
+            $.ajax({
+                type: "post",
+                url: "/back/tableedit_ajax/",
+                data: {id: id},
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                    $('#tablename2').val("");
+                    $('#tablestatus2').val("");
+                    $("#ordertime2").val("");
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    // 实现点“编辑” 会自动赋值原有的值
+                    $('#tablename2').val(obj.data.tablename);
+                    $("#ordertime2").val(obj.data.ordertime);
+                    $("#tablestatus2").val(obj.data.ts_id);
+                }
+            });
+        };
+
+
+
         $('#tableedit_confirm').click(function () {
             $.ajax({
-                url: "/back/table_edit_ajax/",
+                url: "/back/tableedit_confirm/",
                 type: "POST",
                 data: $('#tableedit_form').serialize(),
                 beforeSend: function(xhr,settings){
@@ -96,7 +121,6 @@
                 },
                 success: function (data) {
                     var obj = JSON.parse(data);
-                    console.log(obj.status);
                     if(obj.status){
                         location.reload()
                     }else {

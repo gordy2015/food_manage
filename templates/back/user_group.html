@@ -58,7 +58,6 @@
             $('#groupedit_form').removeClass('hide')
             var gid = $(this).attr('gid')
             var groupname = $(this).siblings().eq(1).text()
-            console.log(groupname)
             $('#groupedit_form').find('input[name="gid"]').val(gid)
             $('#groupedit_form').find('input[name="groupname"]').val(groupname)
         })

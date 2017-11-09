@@ -13,6 +13,18 @@
                     <input type="submit" value="添加" id="tableadd">
                 </form>
             </div>
+
+          {#   <div class="shade hide"></div>   <div class="foodtypeedit-modal" hide">   <form id="foodtypeedit_form">#}
+            <div class="foodtypeedit_dv hide">
+                <form id="foodtypeedit_form">
+                    <input type="hidden" name="tid">
+                    <input type="text" name="foodtypename" id="foodtypename2" placeholder="菜系名称">
+                    <input type="button" value="确定修改" id="foodtypeedit_confirm">
+                    <input type="button" value="取消" class="foodtypeedit_cancel">
+                    <p id="err_foodtype_edit_ajax" style="color: red"></p>
+                </form>
+            </div>
+
             <h3>菜系列表</h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
@@ -29,22 +41,12 @@
                             <tr tid="{{ row.id }}">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ row.foodtypename }}</td>
-                                <td><a class="foodtypeedit">编辑</a>| <a class="foodtypedel">删除</a></td><span id="err_foodtype_del_ajax"></span>
+                                <td><a class="foodtypeedit" onclick="foodtypeedit({{ row.id }})">编辑</a>| <a class="foodtypedel">删除</a></td><span id="err_foodtype_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="shade hide"></div>
-            <div class="foodtypeedit-modal hide">
-                <form id="foodtypeedit_form">
-                    <input type="hidden" name="tid">
-                    <input type="text" name="foodtypename" placeholder="菜系名称">
-                    <input type="button" value="确定修改" id="foodtypeedit_confirm">
-                    <input type="button" value="取消" class="foodtypeedit_cancel">
-                    <p id="err_foodtype_edit_ajax" style="color: red"></p>
-                </form>
             </div>
 
         </div>
@@ -55,19 +57,20 @@
 {% block js %}
     <script>
         $(function () {
-            $('.foodtypeedit').click(function () {
-                $('.foodtypeedit-modal,.shade').removeClass('hide');
-                var tid = $(this).parent().parent().attr("tid");
-                $('#foodtypeedit_form').find('input[name="tid"]').val(tid);
+{#            $('.foodtypeedit').click(function () {#}
+{#                $('.foodtypeedit_dv').removeClass('hide');#}
+{#                var tid = $(this).parent().parent().attr("tid");#}
+{#                $('#foodtypeedit_form').find('input[name="tid"]').val(tid);#}
+{#            });#}
 
-            });
             $('.foodtypeedit_cancel').click(function () {
-                $('.foodtypeedit-modal,.shade').addClass('hide')
+                $('.foodtypeedit_dv').addClass('hide')
                 $('#err_foodtype_manage_ajax').text('')
             });
 
 
         });
+
 
         $('#tableadd').click(function () {
             $.ajax({
@@ -89,12 +92,30 @@
             })
         });
 
+        function foodtypeedit(id) {
+            $('.foodtypeedit_dv').removeClass('hide');
+            $('#foodtypeedit_form').find('input[name="tid"]').val(id);  //这里给input[name="tid"] 赋值是为了给tableedit_confirm提交时取得id值
 
+            $.ajax({
+                type: "post",
+                url: "/back/foodtypeedit_ajax/",
+                data: {id: id},
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                    $('#foodtypename2').val("");
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    // 实现点“编辑” 会自动赋值原有的值
+                    $('#foodtypename2').val(obj.data.foodtypename);
+                }
+            });
+        };
 
 
         $('#foodtypeedit_confirm').click(function () {
             $.ajax({
-                url: "/back/foodtype_edit_ajax/",
+                url: "/back/foodtypeedit_confirm/",
                 type: "POST",
                 data: $('#foodtypeedit_form').serialize(),
                 beforeSend: function(xhr,settings){

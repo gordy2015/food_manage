@@ -2,7 +2,7 @@ from django.shortcuts import render,HttpResponse,redirect
 from backapp import models
 from django import forms
 from django.forms import fields
-
+import json
 
 
 
@@ -30,9 +30,30 @@ def table_manage(request):
         if t and o:
             models.table_manage.objects.create(tablename=t,ordertime=o,ts_id=s)
         return redirect('/back/table_manage/')
-import json
+
 @auth
-def table_edit_ajax(request):
+def tableedit_ajax(request):
+    ret = {'status': True, 'error': 'None', 'data': None}
+    try:
+        i = request.POST.get('id')
+        result = models.table_manage.objects.filter(id=i)
+        if result:
+            for s in result:
+                ret['data'] = {'tablename': s.tablename, 'ts_id': s.ts_id, 'ordertime': s.ordertime}
+        else:
+            ret['status'] = False
+            ret['error'] = 'not found this table'
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = 'request error'
+    # print(type(ret))
+    # print(ret)
+    # print(json.dumps(ret))
+    return HttpResponse(json.dumps(ret))
+
+
+@auth
+def tableedit_confirm(request):
     ret = {'status':True, 'error': None, 'data': None}
     try:
         i = request.POST.get('tid')
@@ -47,7 +68,6 @@ def table_edit_ajax(request):
             ret['status'] = False
             ret['error'] = '请输入完整的数据'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
     return HttpResponse(json.dumps(ret))
@@ -66,7 +86,6 @@ def table_del_ajax(request):
             ret['status'] = False
             ret['error'] = '删除失败'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
     return HttpResponse(json.dumps(ret))
@@ -99,10 +118,28 @@ def foodtype_add_ajax(request):
     # print(ret)
     return HttpResponse(json.dumps(ret))
 
-
+@auth
+def foodtypeedit_ajax(request):
+    ret = {'status': True, 'error': 'None', 'data': None}
+    try:
+        i = request.POST.get('id')
+        result = models.foodtype_manage.objects.filter(id=i)
+        if result:
+            for s in result:
+                ret['data'] = {'foodtypename': s.foodtypename}
+        else:
+            ret['status'] = False
+            ret['error'] = 'not found this foodtypename'
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = 'request error'
+    # print(type(ret))
+    # print(ret)
+    # print(json.dumps(ret))
+    return HttpResponse(json.dumps(ret))
 
 @auth
-def foodtype_edit_ajax(request):
+def foodtypeedit_confirm(request):
     ret = {'status':True, 'error':None, 'data':None}
     try:
         i = request.POST.get('tid')
@@ -144,7 +181,6 @@ def foodtype_del_ajax(request):
     return HttpResponse(json.dumps(ret))
 
 
-
 #菜品管理
 @auth
 def food_manage(request):
@@ -164,7 +200,7 @@ def food_add_ajax(request):
         if f and p and v and t:
             fo = {'foodname':f,'price':p,'vip_price':v,'foodtype_id':t}
             print(fo)
-            w = models.food_manage.objects.create(**fo) #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
+            w = models.food_manage.objects.create(**fo)  #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
             if w:
                 ret['error'] = '添加成功'
             else:
@@ -174,7 +210,6 @@ def food_add_ajax(request):
             ret['status'] = False
             ret['error'] = '内容不能为空'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
     return HttpResponse(json.dumps(ret))
@@ -186,26 +221,20 @@ def foodedit_ajax(request):
     ret = {'status': True, 'error': 'None', 'data': None}
     try:
         i = request.POST.get('id')
-        print(i)
         result = models.food_manage.objects.filter(id=i)
-        print(result)
         if result:
             for s in result:
-                print(s)
                 ret['data'] = {'foodname': s.foodname, 'price': s.price, 'vip_price': s.vip_price, 'foodtype_id': s.foodtype_id}
         else:
             ret['status'] = False
             ret['error'] = 'not found this food'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = 'request error'
     # print(type(ret))
-    print(ret)
+    # print(ret)
     # print(json.dumps(ret))
-
     return HttpResponse(json.dumps(ret))
-
 
 @auth
 def foodedit_confirm(request):
@@ -216,7 +245,7 @@ def foodedit_confirm(request):
         p = request.POST.get('price')
         v = request.POST.get('vip_price')
         ft = request.POST.get('foodtypename')
-        print('i:%s  f:%s  p:%s  v:%s  ft:%s' %(i,f,p,v,ft))
+        # print('i:%s  f:%s  p:%s  v:%s  ft:%s' %(i,f,p,v,ft))
         if f and p and v and ft:
             fo = {'foodname': f, 'price': p, 'vip_price': v, 'foodtype_id': ft}
             w = models.food_manage.objects.all().filter(id=i).update(**fo)
@@ -229,10 +258,8 @@ def foodedit_confirm(request):
             ret['status'] = False
             ret['error'] = '内容不能为空'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
-    print('fe: %s' % ret)
     return HttpResponse(json.dumps(ret))
 
 @auth
@@ -240,7 +267,6 @@ def food_del_ajax(request):
     ret = {'status': True, 'error': None, 'data': None}
     try:
         i = request.POST.get('id')
-        print(i)
         w = models.food_manage.objects.all().filter(id=i).delete()
         if w[0] == 1:
             ret['error'] = '删除成功'
@@ -248,10 +274,8 @@ def food_del_ajax(request):
             ret['status'] = False
             ret['error'] = '删除失败'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
-    print(ret)
     return HttpResponse(json.dumps(ret))
 
 
@@ -261,17 +285,7 @@ def restaurant_order(request):
     order = models.order.objects.all()
     table = models.table_manage.objects.all()
     od = models.order_detail.objects.all()
-    # print(order.values('all_price'))
     fo = models.food_manage.objects.all()
-
-    # for s in od:
-    #     print(s.food_cho.foodname,s.food_count)
-
-
-    # for m in od:
-    #     # print(m.order_d.id)
-    #     for s in m.order_d.all():
-    #         print(s.all_price,s.orderstatus,s.tablename.tablename,s.tablename.ordertime)
     return render(request, 'back/restaurant_order.html',{'order':order,'table':table,'od':od,'fo':fo})
 
 

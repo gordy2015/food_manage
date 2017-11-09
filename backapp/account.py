@@ -205,7 +205,6 @@ def useredit_ajax(request):
             m = {'email':s.email, 'grouptype': s.grouptype_id}
         if result:
             ret['data'] = m
-
         else:
             ret['status'] = False
             ret['error'] = 'not found this user'
