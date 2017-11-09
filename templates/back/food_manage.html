@@ -4,7 +4,6 @@
 
 {% block body %}
           <div class="cont">
-
             <div>
                 <h3>添加菜品</h3>
                 <form id="foodadd_form">
@@ -18,6 +17,7 @@
                         {% endfor %}
                     </select>
                     <input type="button" value="添加" id="foodadd">
+                    <p id="err_food_add_ajax" style="color: red"></p>
                 </form>
             </div>
             <h3>菜品列表</h3>
@@ -42,7 +42,7 @@
                                 <td>{{ row.foodtype.foodtypename }}</td>
                                 <td>{{ row.price }}</td>
                                 <td>{{ row.vip_price }}</td>
-                                <td><a class="foodedit">编辑</a>| <a class="fooddel">删除</a></td><span id="err_food_del_ajax"></span>
+                                <td><a onclick="foodedit({{ row.id }})" >编辑</a>| <a class="fooddel">删除</a></td><span id="err_food_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -53,10 +53,10 @@
             <div class="foodedit-modal hide">
                 <form id="foodedit_form">
                     <input type="hidden" name="tid">
-                    <input type="text" name="foodname" placeholder="菜名">
-                    <input type="text" name="price" placeholder="价格">
-                    <input type="text" name="vip_price" placeholder="会员价格">
-                    <select name="foodtypename">
+                    <input type="text" name="foodname" id='foodname2' placeholder="菜名">
+                    <input type="text" name="price" id='price2' placeholder="价格">
+                    <input type="text" name="vip_price" id='vip_price2' placeholder="会员价格">
+                    <select name="foodtypename" id="foodtypename2">
                         {% for row in foodtype %}
                             <option value="{{ row.id }}">{{ row.foodtypename }}</option>
                         {% endfor %}
@@ -75,12 +75,14 @@
 {% block js %}
     <script>
         $(function () {
-            $('.foodedit').click(function () {
-                $('.foodedit-modal,.shade').removeClass('hide');
-                var tid = $(this).parent().parent().attr("tid");
-                $('#foodedit_form').find('input[name="tid"]').val(tid);
+            //合并到foodedit(id)
+{#            $('.foodedit').click(function () {#}
+{#                $('.foodedit-modal,.shade').removeClass('hide');#}
+{#                var tid = $(this).parent().parent().attr("tid");#}
+{#                console.log(tid);#}
+{#                $('#foodedit_form').find('input[name="tid"]').val(tid);#}
+{#            })#}
 
-            });
             $('.foodedit_cancel').click(function () {
                 $('.foodedit-modal,.shade').addClass('hide')
                 $('#err_food_manage_ajax').text('')
@@ -101,18 +103,46 @@
                     if(obj.status){
                         location.reload()
                     }else {
-{#                        $('#err_foodtype_edit_ajax').text(obj.error)#}
+                        $('#err_food_add_ajax').text(obj.error)
                     }
                 }
             })
         });
 
 
+        function foodedit(id) {
+            console.log(id)
+            $('.foodedit-modal,.shade').removeClass('hide');
+            $('#foodedit_form').find('input[name="tid"]').val(id);   //这里给input[name="tid"] 赋值是为了给foodedit_confirm提交时取得id值
+            $.ajax({
+                type: "post",
+                url: "/back/foodedit_ajax/",
+                data: {id: id},
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                    $('#foodname2').val("");
+                    $('#price2').val("");
+                    $("#vip_price2").val("");
+                    $("#foodtypename2").val("");
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    // 实现点“编辑” 会自动赋值原有的值
+                    $('#foodname2').val(obj.data.foodname);
+                    $("#price2").val(obj.data.price);
+                    $("#vip_price2").val(obj.data.vip_price);
+                    $("#foodtypename2").val(obj.data.foodtype_id);
+                }
+            });
+        };
+
+
+
         $('#foodedit_confirm').click(function () {
             $.ajax({
-                url: "/back/table_edit_ajax/",
+                url: "/back/foodedit_confirm/",
                 type: "POST",
-                data: $('#foodtypeedit_form').serialize(),
+                data: $('#foodedit_form').serialize(),
                 beforeSend: function(xhr,settings){
                     xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
                 },
@@ -122,7 +152,7 @@
                     if(obj.status){
                         location.reload()
                     }else {
-                        $('#err_foodtype_edit_ajax').text(obj.error)
+                        $('#err_food_edit_ajax').text(obj.error)
                     }
                 }
             })

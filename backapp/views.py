@@ -58,7 +58,6 @@ def table_del_ajax(request):
     ret = {'status': True, 'error': None, 'data': None}
     try:
         i = request.POST.get('id')
-        print(i)
         w = models.table_manage.objects.filter(id=i).delete() #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
         if w[0] == 1:
             ret['error'] = '删除成功'
@@ -95,7 +94,6 @@ def foodtype_add_ajax(request):
             ret['status'] = False
             ret['error'] = '内容不能为空'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
     # print(ret)
@@ -120,7 +118,6 @@ def foodtype_edit_ajax(request):
             ret['status'] = False
             ret['error'] = '内容不能为空'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
     # print(ret)
@@ -131,7 +128,6 @@ def foodtype_del_ajax(request):
     ret = {'status':True, 'error':None, 'data':None}
     try:
         i = request.POST.get('id')
-        print(i)
         if i:
             w = models.foodtype_manage.objects.filter(id=i).delete()
             if w:
@@ -143,10 +139,8 @@ def foodtype_del_ajax(request):
             ret['status'] = False
             ret['error'] = '内容不能为空'
     except Exception as e:
-        print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
-    print(ret)
     return HttpResponse(json.dumps(ret))
 
 
@@ -183,6 +177,62 @@ def food_add_ajax(request):
         print(e)
         ret['status'] = False
         ret['error'] = '请求错误'
+    return HttpResponse(json.dumps(ret))
+
+
+
+@auth
+def foodedit_ajax(request):
+    ret = {'status': True, 'error': 'None', 'data': None}
+    try:
+        i = request.POST.get('id')
+        print(i)
+        result = models.food_manage.objects.filter(id=i)
+        print(result)
+        if result:
+            for s in result:
+                print(s)
+                ret['data'] = {'foodname': s.foodname, 'price': s.price, 'vip_price': s.vip_price, 'foodtype_id': s.foodtype_id}
+        else:
+            ret['status'] = False
+            ret['error'] = 'not found this food'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = 'request error'
+    # print(type(ret))
+    print(ret)
+    # print(json.dumps(ret))
+
+    return HttpResponse(json.dumps(ret))
+
+
+@auth
+def foodedit_confirm(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('tid')
+        f = request.POST.get('foodname')
+        p = request.POST.get('price')
+        v = request.POST.get('vip_price')
+        ft = request.POST.get('foodtypename')
+        print('i:%s  f:%s  p:%s  v:%s  ft:%s' %(i,f,p,v,ft))
+        if f and p and v and ft:
+            fo = {'foodname': f, 'price': p, 'vip_price': v, 'foodtype_id': ft}
+            w = models.food_manage.objects.all().filter(id=i).update(**fo)
+            if w:
+                ret['error'] = '修改成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '修改失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '内容不能为空'
+    except Exception as e:
+        print(e)
+        ret['status'] = False
+        ret['error'] = '请求错误'
+    print('fe: %s' % ret)
     return HttpResponse(json.dumps(ret))
 
 @auth

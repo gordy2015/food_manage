@@ -40,6 +40,8 @@ urlpatterns = [
     url(r'^food_manage/$', views.food_manage),
     url(r'^food_add_ajax/$', views.food_add_ajax),
     url(r'^food_del_ajax/$', views.food_del_ajax),
+    url(r'^foodedit_ajax/$', views.foodedit_ajax),
+    url(r'^foodedit_confirm/$', views.foodedit_confirm),
 
     url(r'^foodtype_manage/$', views.foodtype_manage),
     url(r'^foodtype_add_ajax/$', views.foodtype_add_ajax),

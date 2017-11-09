@@ -57,7 +57,7 @@
                     <p id="user"></p>
                     {% csrf_token %}
                     <input type="hidden" name="edit_id2" id="edit_id2">
-{#                    <input type="text" name="user2" id="user2" placeholder="用户名">#}
+{#                   <input type="text" name="user2" id="user2" placeholder="用户名">#}
                     <input type="password" name="pwd2" id="pwd2" placeholder="密码">
                     <input type="text" name="email2" id="email2" placeholder="邮箱">
 
@@ -138,8 +138,8 @@
             },
             success: function (data) {
                 var obj = JSON.parse(data);
+                // 实现点“编辑” 会自动赋值原有的值
                 $('#email2').val(obj.data.email);
-{#                console.log(obj)#}
                 $("#grouptype2").val(obj.data.grouptype);
             }
         });
@@ -157,8 +157,7 @@
             success: function (data) {
                 var obj = JSON.parse(data);
                 if(obj.status){
-                    location.href = '/back/user_info';
-{#                    console.log(obj.status)#}
+                    location.href = '/back/user_info/';
                 }else {
                     $('#useredit_err').text(obj.error);
                 }
