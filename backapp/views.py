@@ -323,4 +323,3 @@ def order_add_ajax(request):
         ret['status'] = False
         ret['error'] = '请求错误'
     return HttpResponse(json.dumps(ret))
-
