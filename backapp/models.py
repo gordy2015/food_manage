@@ -20,17 +20,17 @@ class table_manage(models.Model):
     ts = models.ForeignKey(to='table_status', to_field='id')
 
 
-class Category(models.Model):
-    caption = models.CharField(max_length=32)
-
-class ArticleType(models.Model):
-    caption = models.CharField(max_length=32)
-
-class Article(models.Model):
-    title = models.CharField(max_length=32)
-    content = models.CharField(max_length=255)
-    category = models.ForeignKey(Category)
-    article_type = models.ForeignKey(ArticleType)
+# class Category(models.Model):
+#     caption = models.CharField(max_length=32)
+#
+# class ArticleType(models.Model):
+#     caption = models.CharField(max_length=32)
+#
+# class Article(models.Model):
+#     title = models.CharField(max_length=32)
+#     content = models.CharField(max_length=255)
+#     category = models.ForeignKey(Category)
+#     article_type = models.ForeignKey(ArticleType)
 
 
 
@@ -39,17 +39,22 @@ class foodtype_manage(models.Model):
 
 
 class food_manage(models.Model):
-    foodname = models.CharField(max_length=32)
-    price = models.FloatField(max_length=12)
-    vip_price = models.FloatField(max_length=12)
+    foodname = models.CharField(max_length=16)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    vip_price = models.DecimalField(max_digits=12, decimal_places=2)
     foodtype = models.ForeignKey(to='foodtype_manage',to_field='id')
 
 
 class order(models.Model):
     tablename = models.ForeignKey(to='table_manage',to_field='id')
-    all_price = models.FloatField(max_length=12)
-    orderstatus = models.CharField(max_length=12)
+    # all_price = models.FloatField(max_length=12)
+    # orderstatus = models.CharField(max_length=12)
     # order_d = models.ManyToManyField(food_manage)
+    order_s = models.ForeignKey(to='orderstatus', to_field='id')
+
+
+class orderstatus(models.Model):
+    orderstatus = models.CharField(max_length=12)
 
 
 class order_detail(models.Model):

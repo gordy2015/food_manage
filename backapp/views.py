@@ -223,8 +223,8 @@ def foodedit_ajax(request):
         i = request.POST.get('id')
         result = models.food_manage.objects.filter(id=i)
         if result:
-            for s in result:
-                ret['data'] = {'foodname': s.foodname, 'price': s.price, 'vip_price': s.vip_price, 'foodtype_id': s.foodtype_id}
+            for s in result:  #价格的数据类型使用了DecimalField，会返回Float类型 导致json.dumps(ret)会报错 TypeError: Object of type 'Decimal' is not JSON serializable， 所以转成str(s.price)和str(s.vip_price)
+                ret['data'] = {'foodname': s.foodname, 'price': str(s.price), 'vip_price': str(s.vip_price), 'foodtype_id': s.foodtype_id}
         else:
             ret['status'] = False
             ret['error'] = 'not found this food'
@@ -281,12 +281,13 @@ def food_del_ajax(request):
 
 # 餐厅订单
 @auth
-def restaurant_order(request):
+def order(request):
     order = models.order.objects.all()
     table = models.table_manage.objects.all()
+    order_s = models.orderstatus.objects.all()
     od = models.order_detail.objects.all()
     fo = models.food_manage.objects.all()
-    return render(request, 'back/restaurant_order.html',{'order':order,'table':table,'od':od,'fo':fo})
+    return render(request, 'back/order.html', {'order':order, 'table':table, 'od':od, 'fo':fo, 'order_s':order_s})
 
 
 @auth
@@ -320,6 +321,15 @@ def order_add_ajax(request):
 
     except Exception as e:
         print('e:%s' %e)
-        ret['status'] = False
+        ret['status'] = Fae
         ret['error'] = '请求错误'
     return HttpResponse(json.dumps(ret))
+
+@auth
+def order_detail(request,nid):
+    order = models.order.objects.all()
+    table = models.table_manage.objects.all()
+    order_s = models.orderstatus.objects.all()
+    od = models.order_detail.objects.all()
+    fo = models.food_manage.objects.all()
+    return render(request,'back/order_detail.html',{'order_s':order_s,'order':order, 'od':od, 'fo':fo})

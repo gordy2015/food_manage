@@ -50,10 +50,9 @@ urlpatterns = [
     url(r'^foodtypeedit_ajax/$', views.foodtypeedit_ajax),
     url(r'^foodtype_del_ajax/$', views.foodtype_del_ajax),
 
-    url(r'^restaurant_order/$', views.restaurant_order),
-    url(r'^restaurant_order-(\d+)/$', views.restaurant_order),
+    url(r'^order/$', views.order),
+    url(r'^order_detail-(?P<nid>\d+)/', views.order_detail),
     url(r'^order_add_ajax/$', views.order_add_ajax),
 
-    url(r'^search_article/$', search_article.search_article)
 
 ]
