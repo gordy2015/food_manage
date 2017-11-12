@@ -5,15 +5,15 @@
 {% block body %}
           <div class="cont">
             <div>
-                <h3>添加订单</h3>
+                <h3>点餐</h3>
                 <form id="orderadd_form">
                     {% csrf_token %}
-                    <select name="tablename">
-                        {% for row in table %}
+                    <select name="tablename_id">
+                        {% for row in tb %}
                         <option value="{{ row.id }}">{{ row.tablename }}</option>
                         {% endfor %}
                     </select>
-                    <select name="food_cho">
+                    <select name="food_cho_id">
                         {% for r in fo %}
                             <option value="{{ r.id }}">
                                 {{ r.foodname }}
@@ -23,6 +23,7 @@
                     <input type="text" name="food_count" placeholder="数量">
                     <input type="button" value="添加" id="orderadd">
                 </form>
+                <span class="err_order_add_ajax"></span>
             </div>
             <h3>餐厅订单</h3>
             <div class="col_2_3_right">
@@ -42,10 +43,10 @@
                             {% for row in order %}
                             <tr tid="{{ row.id }}">
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ row.tablename.tablename }}</td>
-                                <td>{{ row.tablename.ordertime }}</td>
+                                <td>{{ row.table.tablename }}</td>
+                                <td>{{ row.table.ordertime }}</td>
                                 <td>112</td>
-                                <td>{{ row.order_s.orderstatus }}</td>
+                                <td>{{ row.order_s.tablestatus }}</td>
                                 <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a>结算</a></td><span id="err_order_del_ajax"></span>
                             </tr>
                             {% endfor %}
@@ -120,7 +121,7 @@
                     if(obj.status){
                         location.reload()
                     }else {
-{#                        $('#err_foodtype_edit_ajax').text(obj.error)#}
+                        $('#err_order_add_ajax').text(obj.error)
                     }
                 }
             })

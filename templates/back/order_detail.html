@@ -25,10 +25,10 @@
                     {% for s in od %}
                             <tr tid="{{ row.id }}">
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ s.food_cho.foodname }}</td>
-                            <td>{{ s.food_cho.price }}</td>
-                            <td>{{ s.food_count }}</td>
-                            <td class="feec">{% singlefee s.food_cho.price s.food_count %}</td>
+                            <td>{{ s.thisfc.food_cho.foodname }}</td>
+                            <td>{{ s.thisfc.food_cho.price }}</td>
+                            <td>{{ s.thisfc.food_count }}</td>
+                            <td class="feec">{% singlefee s.thisfc.food_cho.price s.thisfc.food_count %}</td>
                             <td><a class="single_edit">编辑</a>|<a class="single_del">删除</a></td>
                             </tr>
                     {% endfor %}

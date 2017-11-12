@@ -19,21 +19,6 @@ class table_manage(models.Model):
     ordertime = models.CharField(max_length=32)
     ts = models.ForeignKey(to='table_status', to_field='id')
 
-
-# class Category(models.Model):
-#     caption = models.CharField(max_length=32)
-#
-# class ArticleType(models.Model):
-#     caption = models.CharField(max_length=32)
-#
-# class Article(models.Model):
-#     title = models.CharField(max_length=32)
-#     content = models.CharField(max_length=255)
-#     category = models.ForeignKey(Category)
-#     article_type = models.ForeignKey(ArticleType)
-
-
-
 class foodtype_manage(models.Model):
     foodtypename = models.CharField(max_length=32)
 
@@ -45,22 +30,30 @@ class food_manage(models.Model):
     foodtype = models.ForeignKey(to='foodtype_manage',to_field='id')
 
 
+
 class order(models.Model):
-    tablename = models.ForeignKey(to='table_manage',to_field='id')
+    table = models.ForeignKey(to='table_manage',to_field='id')
+    order_s = models.ForeignKey(to='table_status', to_field='id')
     # all_price = models.FloatField(max_length=12)
-    # orderstatus = models.CharField(max_length=12)
-    # order_d = models.ManyToManyField(food_manage)
-    order_s = models.ForeignKey(to='orderstatus', to_field='id')
+    # order_de = models.ManyToManyField(order_detail)
 
+# class orderstatus(models.Model):
+#     orderstatus = models.CharField(max_length=12)
 
-class orderstatus(models.Model):
-    orderstatus = models.CharField(max_length=12)
+class food_choose(models.Model):
+    food_count = models.CharField(max_length=12,default=1)
+    food_cho = models.ForeignKey(to='food_manage', to_field='id')
 
 
 class order_detail(models.Model):
-    food_count = models.CharField(max_length=12,default=1)
-    food_cho = models.ForeignKey(to='food_manage', to_field='id')
-    order_d = models.ManyToManyField(order)
+    thisorder = models.ForeignKey(to='order',to_field='id')
+    thisfc = models.ForeignKey(to='food_choose',to_field='id')
+
+
+
+
+
+
 
 
 
