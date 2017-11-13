@@ -33,7 +33,7 @@ class food_manage(models.Model):
 
 class order(models.Model):
     table = models.ForeignKey(to='table_manage',to_field='id')
-    order_s = models.ForeignKey(to='table_status', to_field='id')
+    # order_s = models.ForeignKey(to='table_status', to_field='id')
     # all_price = models.FloatField(max_length=12)
     # order_de = models.ManyToManyField(order_detail)
 
