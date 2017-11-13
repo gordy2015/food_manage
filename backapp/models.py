@@ -34,15 +34,14 @@ class food_manage(models.Model):
 class order(models.Model):
     table = models.ForeignKey(to='table_manage',to_field='id')
     # order_s = models.ForeignKey(to='table_status', to_field='id')
-    # all_price = models.FloatField(max_length=12)
+    all_price = models.DecimalField(max_digits=12,decimal_places=2,default=0.00)
     # order_de = models.ManyToManyField(order_detail)
 
-# class orderstatus(models.Model):
-#     orderstatus = models.CharField(max_length=12)
 
 class food_choose(models.Model):
     food_count = models.CharField(max_length=12,default=1)
     food_cho = models.ForeignKey(to='food_manage', to_field='id')
+    table_n = models.CharField(max_length=12,null=True)
 
 
 class order_detail(models.Model):

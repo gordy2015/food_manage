@@ -296,97 +296,52 @@ def order_add_ajax(request):
         f = request.POST.get('food_cho_id')
         fc = request.POST.get('food_count')
         print(t, f, fc)
-        if int(fc):
-            ti = models.order.objects.filter(table_id=t).first()
-            if ti:
-                order_list = ti.id
-                print('order %s is exist' %order_list)
-                fi = models.order_detail.objects.filter(thisorder_id=ti.id) #取出thisfc_id
-                fc_list = None  # fc_list表示food_cho_id, 先定义为None, 如果food_cho_id存在，则赋值为str(f), 不存在则保持None
-                for i in fi:
-                    print(i.thisfc.food_cho_id)
-                    if str(i.thisfc.food_cho_id) == str(f):
-                        # print('hihi %s' %i.thisfc_id)
-                        fc_id = i.thisfc_id
-                        fc_list = str(f)
-                        # print('food_cho_id is exist in order_detail')
-                    else:
-                        pass
-                if fc_list:
-                    print('food_cho_id is exist')
-                    w = models.order_detail.objects.filter(thisorder_id=ti.id, thisfc_id=fc_id).first()
-                    old_fc = w.thisfc.food_count
-                    fc = int(old_fc) + int(fc)
-                    print('food_cho is exist %s %s' %(old_fc, fc))
-                    models.food_choose.objects.filter(id=fc_id, food_cho_id=f).update(food_count=fc)
-                    # fo = {'id':fi.id, 'food_cho_id': f, 'food_count': fc}
-                    # fc_list = fi.id
-                    # print('fc_list: %s' %fc_list)
-                else:
-                    print('food_cho_id is not exist')
+        w = models.order.objects.filter(table_id=t)
+        if w: #order存在
+            od_id = w.first().id
+            print('order %s is exist' %t)
+            # oi = models.order.objects.filter(table_id=t).first().id
+            tn = models.food_choose.objects.filter(table_n=t,food_cho_id=f).first()
+            # fc_id = None
+            if tn:  #order和food_cho_id都存在
+                print('food_cho_id %s is exist' %f)
+                print(tn.food_count)
+                fc_id = None
+                new_fc_count = int(tn.food_count) + int(fc)
+                nf = {'food_cho_id': f, 'food_count': tn.food_count, 'table_n': t}
+                models.food_choose.objects.filter(**nf).update(food_count=str(new_fc_count))
+                # fc_id = models.food_choose.objects.filter(food_cho_id=f, table_n=t, food_count=str(new_fc_count))
 
+            else: #order存在，但food_cho_id不存在
+                print('food_cho_id %s is not exist' %f)
+                nf = {'food_cho_id':f, 'food_count':fc, 'table_n':t}
+                models.food_choose.objects.create(**nf)
+                fc_id = models.food_choose.objects.filter(**nf).first().id
+
+
+        else: #order不存在
+            print('order %s is not exist')
+            #添加这个新的order
+            models.order.objects.create(table_id=t)
+            od_id = models.order.objects.filter(table_id=t).first().id
+            print('food_cho_id %s is not exist' % f)
+            nf = {'food_cho_id': f, 'food_count': fc, 'table_n': t}
+            models.food_choose.objects.create(**nf)
+            fc_id = models.food_choose.objects.filter(**nf).first().id
+        if fc_id:
+            od_dict = {'thisorder_id':od_id, 'thisfc_id':fc_id}
+            q = models.order_detail.objects.filter(**od_dict)
+            if q:
+                print('order_detail %s is exist' %q.first().id)
             else:
-                print('%s is not exist' %t)
-                fo = {'food_cho_id': f, 'food_count': fc}
-                w = models.food_choose.objects.create(**fo)
-                fc_list = models.food_choose.objects.filter(**fo).first().id
-                print('new create %s' % fc_list)
-                tablestatus = models.table_manage.objects.filter(id=t).first().ts_id
-                new_order = models.order.objects.create(table_id=t)
-                order_list = models.order.objects.filter(table_id=t).first().id
+                print('order_detail is not exist')
+                models.order_detail.objects.create(**od_dict)
 
-                ordt = models.order_detail.objects.filter(thisfc_id=fc_list, thisorder_id=order_list)
-                if ordt:
-                    print('this order_detail is exist')
-                else:
-                    od = {'thisorder_id': str(order_list), 'thisfc_id': str(fc_list)}
-                    print(od)
-                    q = models.order_detail.objects.create(**od)
-                    if q:
-                        ret['error'] = '添加成功'
-                    else:
-                        ret['status'] = False
-                        ret['error'] = '添加失败'
-                    print(ret)
-
-        #         if fi:
-        #             print('abc')
-        #             print('fi is true: %s %s' %(ti.id, fi.id))
-        #             w = models.order_detail.objects.filter(thisorder_id=ti.id, thisfc_id=fi.id).first()
-        #             old_fc = w.thisfc.food_count
-        #             fc = int(old_fc) + int(fc)
-        #             print('food_cho is exist %s %s' %(old_fc, fc))
-        #             models.food_choose.objects.filter(id=fi.id, food_cho=f).update(food_count=fc)
-        #             # fo = {'id':fi.id, 'food_cho_id': f, 'food_count': fc}
-        #             fc_list = fi.id
-        #             print('fc_list: %s' %fc_list)
-        #         else:
-        #             fo = {'food_cho_id': f, 'food_count': fc}
-        #             w = models.food_choose.objects.create(**fo)
-        #             fc_list = models.food_choose.objects.filter(**fo).first().id
-        #             print('new create %s' % fc_list)
-        #     else:
-        #         print('%s is not exist' %t)
-        #         fo = {'food_cho_id': f, 'food_count': fc}
-        #         w = models.food_choose.objects.create(**fo)
-        #         fc_list = models.food_choose.objects.filter(**fo).first().id
-        #         print('new create %s' % fc_list)
-        #         tablestatus = models.table_manage.objects.filter(id=t).first().ts_id
-        #         nor = {'table_id':t, 'order_s_id':tablestatus}
-        #         new_order = models.order.objects.create(**nor)
-        #
-        #          # order_list = models.order.objects.all().filter(table_id=t).values('id').first()  # 取出对应餐桌的order id, 取出的数据类型是dict, 只取id写成order_list['id']
-        #         order_list = models.order.objects.all().filter(table_id=t).first().id  # 这样写也可以，效果同上，但取出的数据类型是int, order_list.id
-        #
-
-        # else:
-        #     ret['status'] = False
-        #     ret['error'] = '请输入数量'
 
     except Exception as e:
-        print('error:%s' %e)
         ret['status'] = False
         ret['error'] = '请求错误'
+        print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
 
 @auth

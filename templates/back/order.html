@@ -45,7 +45,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ row.table.tablename }}</td>
                                 <td>{{ row.table.ordertime }}</td>
-                                <td>112</td>
+                                <td>{{ row.all_price }}</td>
                                 <td>{{ row.table.ts.tablestatus }}</td>
                                 <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a>结算</a></td><span id="err_order_del_ajax"></span>
                             </tr>
