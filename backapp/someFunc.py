@@ -21,20 +21,17 @@ def sum_allprice():
             for i in u:
                 food_cho_id = i['food_cho_id']
                 food_count = i['food_count']
-                print(food_count, food_cho_id)
                 s = models.food_manage.objects.filter(id=food_cho_id).first().price
                 new_allprice = new_allprice + int(s) * int(food_count)
-                print(new_allprice)
             if new_allprice != old_allprice:
                 models.order.objects.filter(table_id=q).update(all_price=new_allprice)
         elif co == 1:
             u = models.food_choose.objects.filter(table_n=q).values('food_cho_id','food_count')
-            print(u[0]['food_cho_id'], u[0]['food_count'])
+            # print(u[0]['food_cho_id'], u[0]['food_count'])
             food_cho_id = u[0]['food_cho_id']
             food_count = u[0]['food_count']
             s = models.food_manage.objects.filter(id=food_cho_id).first().price
             new_allprice = int(s) * int(food_count)
-            print(new_allprice)
             if new_allprice != old_allprice:
                 models.order.objects.filter(table_id=q).update(all_price=new_allprice)
         else:

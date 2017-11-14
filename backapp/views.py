@@ -297,7 +297,6 @@ def order_add_ajax(request):
         t = request.POST.get('tablename_id')
         f = request.POST.get('food_cho_id')
         fc = request.POST.get('food_count')
-        print(t, f, fc)
         w = models.order.objects.filter(table_id=t)
         if w: #order存在
             od_id = w.first().id
@@ -307,7 +306,6 @@ def order_add_ajax(request):
             # fc_id = None
             if tn:  #order和food_cho_id都存在
                 print('food_cho_id %s is exist' %f)
-                print(tn.food_count)
                 fc_id = None
                 new_fc_count = int(tn.food_count) + int(fc)
                 nf = {'food_cho_id': f, 'food_count': tn.food_count, 'table_n': t}
@@ -352,7 +350,6 @@ def order_del_ajax(request):
         fd = models.food_choose.objects.filter(table_n=m).delete()
         odd = models.order_detail.objects.filter(thisorder_id=i).delete()
         ord = models.order.objects.filter(id=i).delete()
-        print(type(fd),fd,odd,ord)
         if fd and odd and ord:
             ret['status'] = True
             ret['error'] = '删除成功'
@@ -377,7 +374,6 @@ def order_comfirm_ajax(request):
             ret['error'] = '此订单已结算，无需再次结算'
         else:
             tm = models.table_manage.objects.filter(id=m).update(ts_id=1)
-            print(m,tm)
             if m and tm:
                 ret['status'] = True
                 ret['error'] = '订单结算成功'
@@ -410,7 +406,6 @@ def fc_del_ajax(request):
         m = models.order_detail.objects.filter(id=i).first().thisfc_id
         fd = models.food_choose.objects.filter(id=m).delete()
         ord = models.order_detail.objects.filter(id=i).delete()
-        print(type(fd),m,fd,ord)
         if m and fd and ord:
             ret['status'] = True
             ret['error'] = '删除成功'
@@ -428,14 +423,17 @@ def fcount_comfirm(request):
     ret = {'status': True, 'error': None, 'data': None}
     try:
         i = request.POST.get('id')
+        c = request.POST.get('nfcount')
+        print('i: %s , c: %s' %(i,c))
+        models.order_detail.objects.filter(thisfc_id=i).first()
 
 
-        if m and fd and ord:
-            ret['status'] = True
-            ret['error'] = '删除成功'
-        else:
-            ret['status'] = False
-            ret['error'] = '删除失败'
+        # if i and c:
+        #     ret['status'] = True
+        #     ret['error'] = '删除成功'
+        # else:
+        #     ret['status'] = False
+        #     ret['error'] = '删除失败'
 
     except Exception as e:
         ret['status'] = False
