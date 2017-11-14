@@ -59,8 +59,8 @@
                     <input type="hidden" name="tid">
                     <input type="text" name="tablename" id="tablename2" placeholder="桌名">
                      <select name="tablestatus" id="tablestatus2">
-                        {% for row in tm %}
-                            <option value={{ row.ts_id }}>{{ row.ts.tablestatus }}</option>
+                        {% for row in tst %}
+                            <option value={{ row.id }}>{{ row.tablestatus }}</option>
                         {% endfor %}
                     </select>
                     <input type="datetime-local" id="ordertime2" name="ordertime" placeholder="预定时间">

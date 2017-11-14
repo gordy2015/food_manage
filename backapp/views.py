@@ -21,7 +21,8 @@ def auth(func):
 def table_manage(request):
     if request.method == 'GET':
         tm = models.table_manage.objects.all()
-        return render(request, 'back/table_manage.html',{'tm': tm})
+        tst = models.table_status.objects.all()
+        return render(request, 'back/table_manage.html',{'tm': tm, 'tst':tst})
     elif request.method == 'POST':
         t = request.POST.get('tablename')
         o = request.POST.get('ordertime')
