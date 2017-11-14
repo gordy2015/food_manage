@@ -53,6 +53,12 @@ urlpatterns = [
     url(r'^order/$', views.order),
     url(r'^order_detail-(?P<nid>\d+)/', views.order_detail),
     url(r'^order_add_ajax/$', views.order_add_ajax),
+    url(r'^order_del_ajax/$', views.order_del_ajax),
+    url(r'^order_comfirm_ajax/$', views.order_comfirm_ajax),
+
+    url(r'^fc_del_ajax/$', views.fc_del_ajax),
+    url(r'^fcount_comfirm/$', views.fcount_comfirm),
+
 
 
 ]

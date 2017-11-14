@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse,redirect
-from backapp import models
+from backapp import models,someFunc
 from django import forms
 from django.forms import fields
 import json
@@ -279,15 +279,17 @@ def food_del_ajax(request):
     return HttpResponse(json.dumps(ret))
 
 
-# 餐厅订单
+# 餐厅订单&总价计算
 @auth
 def order(request):
     order = models.order.objects.all()
     tb = models.table_manage.objects.all()
     fo = models.food_manage.objects.all()
+    someFunc.sum_allprice()
     return render(request, 'back/order.html', {'order':order, 'tb':tb, 'fo':fo})
 
 
+#点餐（需要判断之前有无此订单，有要判断之前有无已点过同样的菜品，如果点过，要在原菜品所点的数量上进行增加，没点过直接添加新的菜品，并将菜品与订单做关联。 如果没点过这个订单，要创建新的订单和新的菜品，并把它们关联起来（order_detail））
 @auth
 def order_add_ajax(request):
     ret = {'status': True, 'error': None, 'data': None}
@@ -311,14 +313,11 @@ def order_add_ajax(request):
                 nf = {'food_cho_id': f, 'food_count': tn.food_count, 'table_n': t}
                 models.food_choose.objects.filter(**nf).update(food_count=str(new_fc_count))
                 # fc_id = models.food_choose.objects.filter(food_cho_id=f, table_n=t, food_count=str(new_fc_count))
-
             else: #order存在，但food_cho_id不存在
                 print('food_cho_id %s is not exist' %f)
                 nf = {'food_cho_id':f, 'food_count':fc, 'table_n':t}
                 models.food_choose.objects.create(**nf)
                 fc_id = models.food_choose.objects.filter(**nf).first().id
-
-
         else: #order不存在
             print('order %s is not exist')
             #添加这个新的order
@@ -336,8 +335,8 @@ def order_add_ajax(request):
             else:
                 print('order_detail is not exist')
                 models.order_detail.objects.create(**od_dict)
-
-
+        ret['status'] = True
+        ret['error'] = '添加成功'
     except Exception as e:
         ret['status'] = False
         ret['error'] = '请求错误'
@@ -345,9 +344,101 @@ def order_add_ajax(request):
     return HttpResponse(json.dumps(ret))
 
 @auth
+def order_del_ajax(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+        m = models.order.objects.filter(id=i).first().table_id
+        fd = models.food_choose.objects.filter(table_n=m).delete()
+        odd = models.order_detail.objects.filter(thisorder_id=i).delete()
+        ord = models.order.objects.filter(id=i).delete()
+        print(type(fd),fd,odd,ord)
+        if fd and odd and ord:
+            ret['status'] = True
+            ret['error'] = '删除成功'
+        else:
+            ret['status'] = False
+            ret['error'] = '删除失败'
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = '请求错误'
+        print('EXCEPTION:%s' % e)
+    return HttpResponse(json.dumps(ret))
+
+@auth
+def order_comfirm_ajax(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+        m = models.order.objects.filter(id=i).first().table_id
+        otm = models.table_manage.objects.filter(id=m).first().ts_id
+        if otm == 1:
+            ret['status'] = False
+            ret['error'] = '此订单已结算，无需再次结算'
+        else:
+            tm = models.table_manage.objects.filter(id=m).update(ts_id=1)
+            print(m,tm)
+            if m and tm:
+                ret['status'] = True
+                ret['error'] = '订单结算成功'
+            else:
+                ret['status'] = False
+                ret['error'] = '订单结算失败'
+
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = '请求错误'
+        print('EXCEPTION:%s' % e)
+    return HttpResponse(json.dumps(ret))
+
+
+@auth
 def order_detail(request,nid):
     od = models.order_detail.objects.filter(thisorder_id=nid)
-    # print(od)
-    # for i in od:
-    #     print(i.id,i.thisfc.food_cho.foodname)
-    return render(request,'back/order_detail.html',{'od':od})
+    if od:
+        someFunc.sum_allprice()
+        all_price = od.first().thisorder.all_price
+    else:
+        all_price = 0.00
+    return render(request,'back/order_detail.html',{'od':od, 'all_price':all_price})
+
+@auth #删除单个菜品
+def fc_del_ajax(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+        m = models.order_detail.objects.filter(id=i).first().thisfc_id
+        fd = models.food_choose.objects.filter(id=m).delete()
+        ord = models.order_detail.objects.filter(id=i).delete()
+        print(type(fd),m,fd,ord)
+        if m and fd and ord:
+            ret['status'] = True
+            ret['error'] = '删除成功'
+        else:
+            ret['status'] = False
+            ret['error'] = '删除失败'
+
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = '请求错误'
+        print('EXCEPTION:%s' % e)
+    return HttpResponse(json.dumps(ret))
+
+def fcount_comfirm(request):
+    ret = {'status': True, 'error': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+
+
+        if m and fd and ord:
+            ret['status'] = True
+            ret['error'] = '删除成功'
+        else:
+            ret['status'] = False
+            ret['error'] = '删除失败'
+
+    except Exception as e:
+        ret['status'] = False
+        ret['error'] = '请求错误'
+        print('EXCEPTION:%s' % e)
+    return HttpResponse(json.dumps(ret))
