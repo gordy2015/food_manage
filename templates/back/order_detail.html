@@ -28,7 +28,7 @@
                             <td>{{ s.thisfc.food_cho.foodname }}</td>
                             <td>{{ s.thisfc.food_cho.price }}</td>
 
-                            <td class="fcount">{{ s.thisfc.food_count }}</td>
+                            <td class="fcount_{{ s.id }}">{{ s.thisfc.food_count }}</td>
 
                             <td class="feec">{% singlefee s.thisfc.food_cho.price s.thisfc.food_count %}</td>
                                 <td><a onclick="fcount_edit({{ s.id }},{{ s.thisfc.food_count }})" class="fcount_edit">修改数量</a>|<a class="fc_del">删除</a></td>
@@ -42,34 +42,12 @@
             </div>
             <div><a href="/back/order/">返回</a> </div>
 
-
-{#            <div class="shade hide"></div>#}
-{#            <div class="fcedit-modal hide">#}
-{#                <form id="fcedit_form">#}
-{#                    <table id="mexample"  cellpadding="0" cellspacing="0" border="0" width="100%">#}
-{#                        <input type="text" name="tid" hidden>#}
-{#                        <input type="text" name="foodname" placeholder="菜名">#}
-{#                        <input type="text" name="food_count" placeholder="数量">#}
-{#                        <a>确认修改 | 取消</a>#}
-{#                    </table>#}
-{#                    <p id="err_fc_edit_ajax" style="color: red"></p>#}
-{#                </form>#}
-{#            </div>#}
         </div>
 {% endblock %}
 
 
 {% block js %}
     <script>
-{#        $(function () {#}
-{#            $('.fc_edit').click(function () {#}
-{#                $('.fcedit-modal,.shade').removeClass('hide');#}
-{#                var tid = $(this).parent().parent().attr("tid");#}
-{#                $('#fcedit_form').find('input[name="tid"]').val(tid);#}
-{#            })#}
-{#        });#}
-
-
         $('.fc_del').click(function () {
             if (confirm("确认要删除？")) {
                 $.ajax({
@@ -92,18 +70,17 @@
             }
         });
 
-
+        //点击”修改数量“ 实现文字变成input框，并可保存
         function fcount_edit(id,fcount) {
-            $('.fcount').html('<input  style="width:30px;" type="text" value="'+fcount+'" class="new_fcount"><a onclick="fcount_comfirm('+id+','+fcount+');">保存</a>|<a onclick="fcount_cancel('+fcount+')">取消</a>');
+            $('.fcount_'+id).html('<input  style="width:30px;" type="text" value="'+fcount+'" class="new_fcount"><a onclick="fcount_comfirm('+id+','+fcount+');">保存</a>|<a onclick="fcount_cancel('+id+','+fcount+')">取消</a>');
         };
 
-        function fcount_cancel(fcount) {
-            $('.fcount').html('<td class="fcount">'+fcount+'</td>');
+        function fcount_cancel(id,fcount) {
+            $('.fcount_'+id).html('<td class="fcount_"+'+id+'>'+fcount+'</td>');
         };
 
         function fcount_comfirm(id,fcount) {
-            var nfcount = $('.new_fcount').val();
-            console.log(nfcount);
+            var nfcount = $('.new_fcount').val();   //取出新填入的food_count的值
             $.ajax({
                 type: "post",
                 url: "/back/fcount_comfirm/",
@@ -113,11 +90,18 @@
                 },
                 success: function (data) {
                     var obj = JSON.parse(data);
+                    if(obj.status){
+{#                            alert(obj.error);#}
+                            location.reload()
+                        }else {
+                            alert(obj.error);
+                        }
                 }
             });
-            fcount_cancel(fcount)
+            fcount_cancel(id,fcount)
         };
 
+        //自动执行函数， 实现datatable
         $(document).ready(function() {
             $('#example').dataTable();
             $('#mexample').dataTable();

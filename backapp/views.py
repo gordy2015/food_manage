@@ -337,7 +337,7 @@ def order_add_ajax(request):
         ret['error'] = '添加成功'
     except Exception as e:
         ret['status'] = False
-        ret['error'] = '请求错误'
+        ret['error'] = '请求错误或请输入数字'
         print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
 
@@ -424,19 +424,22 @@ def fcount_comfirm(request):
     try:
         i = request.POST.get('id')
         c = request.POST.get('nfcount')
-        print('i: %s , c: %s' %(i,c))
-        models.order_detail.objects.filter(thisfc_id=i).first()
-
-
-        # if i and c:
-        #     ret['status'] = True
-        #     ret['error'] = '删除成功'
-        # else:
-        #     ret['status'] = False
-        #     ret['error'] = '删除失败'
-
+        if int(c):
+            w = models.order_detail.objects.filter(id=i).first().thisfc_id
+            p = models.food_choose.objects.filter(id=w).first().food_count
+            if c != p:
+                q = models.food_choose.objects.filter(id=w).update(food_count=c)
+                if q:
+                    ret['status'] = True
+                    ret['error'] = '修改成功'
+                else:
+                    ret['status'] = False
+                    ret['error'] = '修改失败'
+        else:
+            ret['status'] = False
+            ret['error'] = '请输入数量'
     except Exception as e:
         ret['status'] = False
-        ret['error'] = '请求错误'
+        ret['error'] = '请求错误或请输入数字'
         print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
