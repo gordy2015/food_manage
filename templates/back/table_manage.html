@@ -30,6 +30,7 @@
                                 <td>桌名</td>
                                 <td>状态</td>
                                 <td>预定时间</td>
+                                <td>是否VIP</td>
                                 <td>操作</td>
                             </tr>
                         </thead>
@@ -40,6 +41,11 @@
                                 <td>{{ row.tablename }}</td>
                                 <td>{{ row.ts.tablestatus }}</td>
                                 <td>{{ row.ordertime }}</td>
+                                {% if row.tlevel_type == 0 %}
+                                        <td>普通会员</td>
+                                        {% else %}
+                                        <td>高级会员</td>
+                                {% endif %}
                                 <td><a class="tableedit" onclick="tableedit({{ row.id }})">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
                             </tr>
                             {% endfor %}
@@ -53,11 +59,15 @@
                     <input type="hidden" name="tid">
                     <input type="text" name="tablename" id="tablename2" placeholder="桌名">
                      <select name="tablestatus" id="tablestatus2">
-                        {% for row in tst %}
-                        <option value={{ row.id }}>{{ row.tablestatus }}</option>
+                        {% for row in tm %}
+                            <option value={{ row.ts_id }}>{{ row.ts.tablestatus }}</option>
                         {% endfor %}
                     </select>
                     <input type="datetime-local" id="ordertime2" name="ordertime" placeholder="预定时间">
+                    <select name="tlevel_type" id="tlevel_type2">
+                            <option value="0">普通会员</option>
+                            <option value="1">高级会员</option>
+                    </select>
                     <input type="button" value="确定修改" id="tableedit_confirm">
                     <input type="button" value="取消" class="tableedit_cancel">
                     <p id="err_table_edit_ajax" style="color: red"></p>
@@ -98,6 +108,7 @@
                     $('#tablename2').val("");
                     $('#tablestatus2').val("");
                     $("#ordertime2").val("");
+                    $("#tlevel_type2").val("")
                 },
                 success: function (data) {
                     var obj = JSON.parse(data);
@@ -105,6 +116,8 @@
                     $('#tablename2').val(obj.data.tablename);
                     $("#ordertime2").val(obj.data.ordertime);
                     $("#tablestatus2").val(obj.data.ts_id);
+                    $("#tlevel_type2").val(obj.data.tlevel_type);
+                    console.log(obj.data.tlevel_type)
                 }
             });
         };

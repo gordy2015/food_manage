@@ -21,8 +21,7 @@ def auth(func):
 def table_manage(request):
     if request.method == 'GET':
         tm = models.table_manage.objects.all()
-        tst = models.table_status.objects.all()
-        return render(request, 'back/table_manage.html',{'tm': tm, 'tst': tst})
+        return render(request, 'back/table_manage.html',{'tm': tm})
     elif request.method == 'POST':
         t = request.POST.get('tablename')
         o = request.POST.get('ordertime')
@@ -39,7 +38,7 @@ def tableedit_ajax(request):
         result = models.table_manage.objects.filter(id=i)
         if result:
             for s in result:
-                ret['data'] = {'tablename': s.tablename, 'ts_id': s.ts_id, 'ordertime': s.ordertime}
+                ret['data'] = {'tablename': s.tablename, 'ts_id': s.ts_id, 'ordertime': s.ordertime, 'tlevel_type':s.tlevel_type}
         else:
             ret['status'] = False
             ret['error'] = 'not found this table'
@@ -60,9 +59,10 @@ def tableedit_confirm(request):
         t = request.POST.get('tablename')
         o = request.POST.get('ordertime')
         s = request.POST.get('tablestatus')
+        te = request.POST.get('tlevel_type')
         # print(i,t,o,s)
         if t and o and s:
-            dic = {'tablename':t, 'ordertime':o, 'ts_id':s}
+            dic = {'tablename':t, 'ordertime':o, 'ts_id':s, 'tlevel_type':te}
             models.table_manage.objects.filter(id=i).update(**dic)
         else:
             ret['status'] = False

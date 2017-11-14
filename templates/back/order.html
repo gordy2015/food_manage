@@ -33,6 +33,7 @@
                                 <td>订单编号</td>
                                 <td>餐桌名</td>
                                 <td>下单日期</td>
+                                <td>是否VIP</td>
                                 <td>总费用</td>
                                 <td>状态</td>
                                 <td>操作</td>
@@ -45,6 +46,11 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
                                     <td>{{ row.table.ordertime }}</td>
+                                    {% if row.table.tlevel_type == 0 %}
+                                        <td>否</td>
+                                        {% else %}
+                                        <td>是</td>
+                                    {% endif %}
                                     <td>{{ row.all_price }}</td>
                                     <td>{{ row.table.ts.tablestatus }}</td>
                                     <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
@@ -65,6 +71,7 @@
                                 <td>订单编号</td>
                                 <td>餐桌名</td>
                                 <td>下单日期</td>
+                                <td>是否VIP</td>
                                 <td>总费用</td>
                                 <td>状态</td>
                                 <td>操作</td>
@@ -77,6 +84,11 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
                                     <td>{{ row.table.ordertime }}</td>
+                                    {% if row.table.tlevel_type == 0 %}
+                                        <td>否</td>
+                                        {% elif row.table.tlevel_type == 1 %}
+                                        <td>是</td>
+                                    {% endif %}
                                     <td>{{ row.all_price }}</td>
                                     <td>{{ row.table.ts.tablestatus }}</td>
                                     <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>

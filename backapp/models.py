@@ -18,6 +18,11 @@ class table_manage(models.Model):
     tablename = models.CharField(max_length=32)
     ordertime = models.CharField(max_length=32)
     ts = models.ForeignKey(to='table_status', to_field='id')
+    tlevel = (
+        (0, u'普通会员'),
+        (1, u'VIP会员'),
+    )
+    tlevel_type = models.IntegerField(choices=tlevel)
 
 class foodtype_manage(models.Model):
     foodtypename = models.CharField(max_length=32)

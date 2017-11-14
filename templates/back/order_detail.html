@@ -15,8 +15,8 @@
                             <tr>
                                 <td>编号</td>
                                 <td>菜名</td>
-                                <td>单价</td>
                                 <td>数量</td>
+                                <td>单价</td>
                                 <td>费用</td>
                                 <td>操作</td>
                             </tr>
@@ -26,17 +26,20 @@
                             <tr tid={{ s.id }}>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ s.thisfc.food_cho.foodname }}</td>
-                            <td>{{ s.thisfc.food_cho.price }}</td>
-
                             <td class="fcount_{{ s.id }}">{{ s.thisfc.food_count }}</td>
-
-                            <td class="feec">{% singlefee s.thisfc.food_cho.price s.thisfc.food_count %}</td>
+                            {% if s.thisorder.table.tlevel_type == 0 %}
+                                <td>{{ s.thisfc.food_cho.price }}</td>
+                                <td class="feec">{% singlefee s.thisfc.food_cho.price s.thisfc.food_count %}</td>
+                            {% elif s.thisorder.table.tlevel_type == 1 %}
+                                <td>{{ s.thisfc.food_cho.vip_price }}</td>
+                                <td class="feec">{% singlefee s.thisfc.food_cho.vip_price s.thisfc.food_count %}</td>
+                            {% endif %}
                                 <td><a onclick="fcount_edit({{ s.id }},{{ s.thisfc.food_count }})" class="fcount_edit">修改数量</a>|<a class="fc_del">删除</a></td>
                             </tr>
                     {% endfor %}
                     </tbody>
                     </table>
-                    <div> <span>合计总费用：{{ all_price }}元</span>    | VIP价格| 非VIP价格</div>
+                    <div> <span>合计总费用：{{ all_price }}元</span> </div>
                     <p id="err_fc_edit_ajax" style="color: red"></p>
                 </form>
             </div>
