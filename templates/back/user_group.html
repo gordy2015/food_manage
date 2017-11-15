@@ -3,11 +3,10 @@
 {% block title %} 用户组管理 {% endblock %}
 {% block body %}
      <div class="cont">
-            <h3>添加用户组 <span style="font-size:14px;color: red">{{ add_err }}</span></h3>
-            <form method="POST" action="/back/group_info/">
-                {% csrf_token %}
-                <input type="text" name="groupname" placeholder="新用户组"/>
-                <input type="submit" value="添加"/>
+            <h3>添加用户组</h3>
+            <form>
+                <input type="text" name="groupname" placeholder="新用户组" id="new_groupname">
+                <input type="submit" value="添加" id="groupadd_confirm">
             </form>
 
             <div id="groupedit_form" class="hide">
@@ -55,18 +54,40 @@
 
     $(function () {
         $('.groupedit').click(function () {
-            $('#groupedit_form').removeClass('hide')
-            var gid = $(this).attr('gid')
-            var groupname = $(this).siblings().eq(1).text()
-            $('#groupedit_form').find('input[name="gid"]').val(gid)
-            $('#groupedit_form').find('input[name="groupname"]').val(groupname)
+            $('#groupedit_form').removeClass('hide');
+            var gid = $(this).attr('gid');
+            var groupname = $(this).siblings().eq(1).text();
+            $('#groupedit_form').find('input[name="gid"]').val(gid);
+            $('#groupedit_form').find('input[name="groupname"]').val(groupname);
         })
         $('#groupedit_cancel').click(function () {
-            $('#groupedit_form').addClass('hide')
+            $('#groupedit_form').addClass('hide');
         })
 
     });
 
+    $('#groupadd_confirm').click(function () {
+        new_groupname = $('#new_groupname').val();
+        $.ajax({
+            type: "post",
+            url: "/back/groupadd_ajax/",
+            data: {groupname: new_groupname},
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+            },
+            success: function (data) {
+                var obj = JSON.parse(data);
+                if(obj.status){
+                    alert(obj.info);
+                    location.reload();
+                }else {
+                    alert(obj.info);
+                }
+            }
+        });
+    });
+
+    //删除某组后是/back/groupdel_xxx地址会自动跳转回/back/group_info/
     function myfun() {
         {
             var c = self.location.href;
@@ -86,8 +107,9 @@
 {#    });#}
 
 {#    写法3#}
+
     $(document).ready(function() {
-            setTimeout(myfun,2000);
+            setTimeout(myfun,2000);   //每2秒自动运行myfun()函数
             $('#example').dataTable();
     });
 

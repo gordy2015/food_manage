@@ -170,10 +170,10 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if(obj.status){
-                            alert(obj.error);
+                            alert(obj.info);
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                     }
                 })

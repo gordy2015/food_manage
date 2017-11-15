@@ -83,10 +83,10 @@
                 success: function (data) {
                     var obj = JSON.parse(data);
                     if(obj.status){
-                        alert(obj.error);
+                        alert(obj.info);
                         location.reload()
                     }else {
-                        alert(obj.error);
+                        alert(obj.info);
                     }
                 }
             })
@@ -127,7 +127,7 @@
                     if(obj.status){
                         location.reload()
                     }else {
-                        $('#err_foodtype_edit_ajax').text(obj.error)
+                        $('#err_foodtype_edit_ajax').text(obj.info)
                     }
                 }
             })
@@ -145,10 +145,10 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if(obj.status){
-                            alert(obj.error);
+                            alert(obj.info);
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                     }
                 })

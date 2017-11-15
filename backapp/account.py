@@ -125,7 +125,7 @@ def userinfo(request):
 
 @auth
 def userdel_ajax(request):
-    ret = {'status': True, 'error': None, 'data': None}
+    ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
         u = request.POST.get('username')
@@ -133,29 +133,29 @@ def userdel_ajax(request):
         # print(i,len(u),len(s),type(u))
         if u == s:
             ret['status'] = False
-            ret['error'] = '删除失败! 不能删除正在登陆的用户: %s, 请退出登陆后由管理员帐户删除' %s
+            ret['info'] = '删除失败! 不能删除正在登陆的用户: %s, 请退出登陆后由管理员帐户删除' %s
         elif u == 'root':
             ret['status'] = False
-            ret['error'] = '删除失败! 不能删除管理员帐户: root'
+            ret['info'] = '删除失败! 不能删除管理员帐户: root'
         else:
             w = models.user_info.objects.filter(id=i).delete()  # 有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
             if w[0] == 1:
                 # print(w)
-                ret['error'] = '删除成功'
+                ret['info'] = '删除成功'
             else:
                 ret['status'] = False
-                ret['error'] = '删除失败'
+                ret['info'] = '删除失败'
     except Exception as e:
         # print(e)
         ret['status'] = False
-        ret['error'] = '请求错误'
+        ret['info'] = '请求错误'
     return HttpResponse(json.dumps(ret))
 
 
 #编辑用户
 @auth
 def useredit_submit(request):
-    ret = {'status': True, 'error': 'None', 'data': None}
+    ret = {'status': True, 'info': 'None', 'data': None}
     try:
         # u = request.POST.get('user2')
         i = request.POST.get('edit_id2')
@@ -168,10 +168,10 @@ def useredit_submit(request):
         if len(e) > 7:
             if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", e) == None:
                 ret['status'] = False
-                ret['error'] = '邮箱格式错误'
+                ret['info'] = '邮箱格式错误'
         else:  # 邮箱长度1-7
             ret['status'] = False
-            ret['error'] = '邮箱长度少于7位'
+            ret['info'] = '邮箱长度少于7位'
         if p and e:
             dic = {'password': p, 'email': e, 'grouptype': g}
         elif p:
@@ -184,7 +184,7 @@ def useredit_submit(request):
         # # models.user_info.objects.filter(id=i).update(password=p,email=e,grouptype=g)
     except Exception as e:
         ret['status'] = False
-        ret['error'] = '请求错误'
+        ret['info'] = '请求错误'
     # print(type(ret))
     # print(ret)
     # print(json.dumps(ret))
@@ -194,7 +194,7 @@ def useredit_submit(request):
 
 @auth
 def useredit_ajax(request):
-    ret = {'status': True, 'error': 'None', 'data': None}
+    ret = {'status': True, 'info': 'None', 'data': None}
     try:
         i = request.POST.get('id')
         # print(i)
@@ -207,10 +207,10 @@ def useredit_ajax(request):
             ret['data'] = m
         else:
             ret['status'] = False
-            ret['error'] = 'not found this user'
+            ret['info'] = 'not found this user'
     except Exception as e:
         ret['status'] = False
-        ret['error'] = 'request error'
+        ret['info'] = 'request error'
     # print(type(ret))
     # print(ret)
     # print(json.dumps(ret))
@@ -235,21 +235,32 @@ def groupinfo(request):
     if request.method == 'GET':
         group_list = models.user_group.objects.all()
         return render(request, 'back/user_group.html', {'group_list':group_list})
-    elif request.method == 'POST':
-        g = request.POST.get('groupname')
-        # print(g)
-        if g:
-            w = models.user_group.objects.filter(groupname=g).first()
-            if w == None:
-                models.user_group.objects.create(groupname=g)
-                add_err = '用户组' + g + '添加成功'
-            else:
-                add_err = '用户组' + g + '已存在'
-        else:
-            add_err = '请输入新的用户组名称'
-        group_list = models.user_group.objects.all()
-        return render(request, 'back/user_group.html', {'group_list': group_list,'add_err': add_err})
 
+
+@auth
+def groupadd_ajax(request):
+    ret = {'status': True, 'info': 'None', 'data': None}
+    try:
+        g = request.POST.get('groupname')
+        print(g)
+        if g.strip():  # 判断输入的内容是否为空
+            result = models.user_group.objects.create(groupname=g)
+            if result:
+                ret['status'] = False
+                ret['info'] = '添加成功'
+            else:
+                ret['status'] = False
+                ret['info'] = '添加失败'
+        else:
+            ret['status'] = False
+            ret['info'] = '添加失败，请输入用户组名'
+    except Exception as e:
+        ret['status'] = False
+        ret['info'] = 'request error'
+    # print(type(ret))
+    # print(ret)
+    # print(json.dumps(ret))
+    return HttpResponse(json.dumps(ret))
 
 #用户组详细
 @auth

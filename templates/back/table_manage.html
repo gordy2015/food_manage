@@ -7,20 +7,23 @@
 
             <div>
                 <h3>添加餐桌</h3>
-                <form action="/back/table_manage/" method="POST">
-                    {% csrf_token %}
-                    <input type="text" name="tablename" placeholder="桌名">
-                    <input type="datetime-local" name="ordertime" placeholder="预定时间">
-                    <select name="tablestatus">
-                        {% for b in tst %}
-                        <option value={{ b.id }}>{{ b.tablestatus }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" value="添加" id="tableadd">
+                <form>
+                    <input type="text" name="tablename" placeholder="新的餐桌名" id="new_tablename">
+                    <input type="submit" value="添加" id="tableadd_confirm">
                 </form>
             </div>
 
-            <h3>餐桌列表</h3>
+            <div id="tableedit" class="hide">
+                <form id="tableedit_form">
+                    <input type="hidden" name="tid">
+                    <input type="text" name="tablename" id="tablename2" placeholder="桌名">
+                    <input type="submit"  value="确认编辑" id="tableedit_confirm">
+                    <input type="button"  value="取消编辑" class="tableedit_cancel">
+
+                </form>
+            </div>
+
+            <h3>餐桌列表 <span id="err_table_edit_ajax" style="color: red"></span></h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
                     <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -28,9 +31,6 @@
                             <tr>
                                 <td>编号</td>
                                 <td>桌名</td>
-                                <td>状态</td>
-                                <td>预定时间</td>
-                                <td>是否VIP</td>
                                 <td>操作</td>
                             </tr>
                         </thead>
@@ -39,13 +39,6 @@
                             <tr tid="{{ row.id }}">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ row.tablename }}</td>
-                                <td>{{ row.ts.tablestatus }}</td>
-                                <td>{{ row.ordertime }}</td>
-                                {% if row.tlevel_type == 0 %}
-                                        <td>普通会员</td>
-                                        {% else %}
-                                        <td>高级会员</td>
-                                {% endif %}
                                 <td><a class="tableedit" onclick="tableedit({{ row.id }})">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
                             </tr>
                             {% endfor %}
@@ -53,26 +46,8 @@
                     </table>
                 </div>
             </div>
-            <div class="shade hide"></div>
-            <div class="tableedit-modal hide">
-                <form id="tableedit_form">
-                    <input type="hidden" name="tid">
-                    <input type="text" name="tablename" id="tablename2" placeholder="桌名">
-                     <select name="tablestatus" id="tablestatus2">
-                        {% for row in tst %}
-                            <option value={{ row.id }}>{{ row.tablestatus }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="datetime-local" id="ordertime2" name="ordertime" placeholder="预定时间">
-                    <select name="tlevel_type" id="tlevel_type2">
-                            <option value="0">普通会员</option>
-                            <option value="1">高级会员</option>
-                    </select>
-                    <input type="button" value="确定修改" id="tableedit_confirm">
-                    <input type="button" value="取消" class="tableedit_cancel">
-                    <p id="err_table_edit_ajax" style="color: red"></p>
-                </form>
-            </div>
+
+
         </div>
 {% endblock %}
 
@@ -89,15 +64,36 @@
 {#            });#}
 
             $('.tableedit_cancel').click(function () {
-                $('.tableedit-modal,.shade').addClass('hide')
+                $('#tableedit').addClass('hide')
                 $('#err_table_manage_ajax').text('')
             });
 
 
         });
 
+        $('#tableadd_confirm').click(function () {
+            new_tablename = $('#new_tablename').val()
+            $.ajax({
+                type: "post",
+                url: "/back/tableadd_ajax/",
+                data: {tablename: new_tablename},
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                },
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    if(obj.status){
+                        alert(obj.info);
+                        location.reload();
+                    }else {
+                        alert(obj.info);
+                    }
+                }
+            });
+        });
+
         function tableedit(id) {
-            $('.tableedit-modal,.shade').removeClass('hide');
+            $('#tableedit').removeClass('hide');
             $('#tableedit_form').find('input[name="tid"]').val(id);   //这里给input[name="tid"] 赋值是为了给tableedit_confirm提交时取得id值
             $.ajax({
                 type: "post",
@@ -106,18 +102,11 @@
                 beforeSend: function (xhr, settings) {
                     xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
                     $('#tablename2').val("");
-                    $('#tablestatus2').val("");
-                    $("#ordertime2").val("");
-                    $("#tlevel_type2").val("")
                 },
                 success: function (data) {
                     var obj = JSON.parse(data);
                     // 实现点“编辑” 会自动赋值原有的值
                     $('#tablename2').val(obj.data.tablename);
-                    $("#ordertime2").val(obj.data.ordertime);
-                    $("#tablestatus2").val(obj.data.ts_id);
-                    $("#tlevel_type2").val(obj.data.tlevel_type);
-                    console.log(obj.data.tlevel_type)
                 }
             });
         };
@@ -137,7 +126,7 @@
                     if(obj.status){
                         location.reload()
                     }else {
-                        $('#err_table_edit_ajax').text(obj.error)
+                        $('#err_table_edit_ajax').text(obj.info)
                     }
                 }
             })
@@ -146,7 +135,7 @@
         $('.tabledel').click(function () {
             if (confirm("确认要删除？")) {
                 $.ajax({
-                    url: "/back/table_del_ajax/",
+                    url: "/back/tabledel_ajax/",
                     type: "POST",
                     data: {id: $(this).parent().parent().attr("tid")},
                     beforeSend: function(xhr,settings){
@@ -155,10 +144,10 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if(obj.status){
-                            alert(obj.error);
+                            alert(obj.info);
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                     }
                 })

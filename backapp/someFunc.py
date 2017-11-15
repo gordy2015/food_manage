@@ -5,7 +5,7 @@ from django.forms import fields,widgets
 import json,re
 
 
-def sum_allprice():
+def sum_allprice_oldver01():
     order = models.order.objects.all()
     tb = models.table_manage.objects.all()
     fo = models.food_manage.objects.all()
@@ -45,3 +45,16 @@ def sum_allprice():
             print('not any food_cho')
             models.order.objects.filter(table_id=q).update(all_price=0.00)
     # return render(request, 'back/order.html', {'order':order, 'tb':tb, 'fo':fo})
+
+
+def sum_allprice():
+    order = models.order.objects.all()
+    fc = models.food_choose.objects.all()
+    w = order.values('id')
+    print(w)
+    for i in w:
+        q = models.food_choose.objects.filter(order_n_id=i)
+
+
+
+

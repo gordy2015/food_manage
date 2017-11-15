@@ -25,16 +25,16 @@
                     {% for s in od %}
                             <tr tid={{ s.id }}>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ s.thisfc.food_cho.foodname }}</td>
-                            <td class="fcount_{{ s.id }}">{{ s.thisfc.food_count }}</td>
-                            {% if s.thisorder.table.tlevel_type == 0 %}
-                                <td>{{ s.thisfc.food_cho.price }}</td>
-                                <td class="feec">{% singlefee s.thisfc.food_cho.price s.thisfc.food_count %}</td>
-                            {% elif s.thisorder.table.tlevel_type == 1 %}
-                                <td>{{ s.thisfc.food_cho.vip_price }}</td>
-                                <td class="feec">{% singlefee s.thisfc.food_cho.vip_price s.thisfc.food_count %}</td>
+                            <td>{{ s.food_cho.foodname }}</td>
+                            <td class="fcount_{{ s.id }}">{{ s.food_count }}</td>
+                            {% if s.order_n.vip_type == 0 %}
+                                <td>{{ s.food_cho.price }}</td>
+                                <td class="feec">{% singlefee s.food_cho.price s.food_count %}</td>
+                            {% elif s.order_n.vip_type == 1 %}
+                                <td>{{ s.food_cho.vip_price }}</td>
+                                <td class="feec">{% singlefee s.food_cho.vip_price s.food_count %}</td>
                             {% endif %}
-                                <td><a onclick="fcount_edit({{ s.id }},{{ s.thisfc.food_count }})" class="fcount_edit">修改数量</a>|<a class="fc_del">删除</a></td>
+                                <td><a onclick="fcount_edit({{ s.id }},{{ s.food_count }})" class="fcount_edit">修改数量</a>|<a class="fc_del">删除</a></td>
                             </tr>
                     {% endfor %}
                     </tbody>
@@ -94,10 +94,10 @@
                 success: function (data) {
                     var obj = JSON.parse(data);
                     if(obj.status){
-{#                            alert(obj.error);#}
+{#                            alert(obj.info);#}
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                 }
             });

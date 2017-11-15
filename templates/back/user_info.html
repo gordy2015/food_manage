@@ -92,10 +92,10 @@
                 success: function (data) {
                     var obj = JSON.parse(data);
                     if(obj.status){
-                        alert(obj.error);
+                        alert(obj.info);
                         location.href = '/back/user_info'
                     }else {
-                        alert(obj.error);
+                        alert(obj.info);
                     }
                 }
             })}else{
@@ -159,7 +159,7 @@
                 if(obj.status){
                     location.href = '/back/user_info/';
                 }else {
-                    $('#useredit_err').text(obj.error);
+                    $('#useredit_err').text(obj.info);
                 }
             }
         });

@@ -32,11 +32,14 @@ urlpatterns = [
     url(r'^groupdetail_(\d+)/$', account.groupdetail),
     url(r'^groupedit/$', account.groupedit),
     url(r'^groupdel_(\d+)/$', account.groupdel),
+    url(r'^groupadd_ajax/$', account.groupadd_ajax),
 
     url(r'^table_manage/$', views.table_manage),
     url(r'^tableedit_confirm/$', views.tableedit_confirm),
     url(r'^tableedit_ajax/$', views.tableedit_ajax),
-    url(r'^table_del_ajax/$', views.table_del_ajax),
+    url(r'^tabledel_ajax/$', views.tabledel_ajax),
+    url(r'^tableadd_ajax/$', views.tableadd_ajax),
+
 
     url(r'^food_manage/$', views.food_manage),
     url(r'^food_add_ajax/$', views.food_add_ajax),

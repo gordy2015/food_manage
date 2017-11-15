@@ -5,7 +5,7 @@
 {% block body %}
           <div class="cont">
             <div>
-                <h3>点餐</h3>
+                <h3>添加订单</h3>
                 <form id="orderadd_form">
                     {% csrf_token %}
                     <select name="tablename_id">
@@ -21,6 +21,10 @@
                         {% endfor %}
                     </select>
                     <input type="text" name="food_count" placeholder="数量">
+                    <select name="orderstatus">
+                        <option value="0">未结账</option>
+                        <option value="1">已结账</option>
+                    </select>
                     <input type="button" value="添加" id="orderadd">
                 </form>
             </div>
@@ -45,14 +49,18 @@
                                     <tr tid="{{ row.id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
-                                    <td>{{ row.table.ordertime }}</td>
-                                    {% if row.table.tlevel_type == 0 %}
+                                    <td>{{ row.ordertime }}</td>
+                                    {% if row.vip_type == 0 %}
                                         <td>否</td>
                                         {% else %}
                                         <td>是</td>
                                     {% endif %}
                                     <td>{{ row.all_price }}</td>
-                                    <td>{{ row.table.ts.tablestatus }}</td>
+                                    {% if row.orderstatus == 0 %}
+                                        <td>未结账</td>
+                                        {% elif row.orderstatus == 1 %}
+                                        <td>已结账</td>
+                                    {% endif %}
                                     <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
                                     </tr>
                                 {% endif %}
@@ -83,14 +91,18 @@
                                     <tr tid="{{ row.id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
-                                    <td>{{ row.table.ordertime }}</td>
-                                    {% if row.table.tlevel_type == 0 %}
+                                    <td>{{ row.ordertime }}</td>
+                                    {% if row.vip_type == 0 %}
                                         <td>否</td>
-                                        {% elif row.table.tlevel_type == 1 %}
+                                        {% elif row.vip_type == 1 %}
                                         <td>是</td>
                                     {% endif %}
                                     <td>{{ row.all_price }}</td>
-                                    <td>{{ row.table.ts.tablestatus }}</td>
+                                    {% if row.orderstatus == 0 %}
+                                        <td>未结账</td>
+                                        {% elif row.orderstatus == 1 %}
+                                        <td>已结账</td>
+                                    {% endif %}
                                     <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
                                     </tr>
                                {% endif %}
@@ -136,10 +148,10 @@
                     var obj = JSON.parse(data);
                     console.log(obj.status);
                     if(obj.status){
-                        alert(obj.error);
+                        alert(obj.info);
                         location.reload()
                     }else {
-                        alert(obj.error);
+                        alert(obj.info);
                     }
                 }
             })
@@ -158,10 +170,10 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if(obj.status){
-                            alert(obj.error);
+                            alert(obj.info);
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                    }
                 })
@@ -180,10 +192,10 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if(obj.status){
-                            alert(obj.error);
+                            alert(obj.info);
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                    }
                 })
