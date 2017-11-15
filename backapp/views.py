@@ -306,7 +306,7 @@ def order(request):
     order = models.order.objects.all()
     tb = models.table_manage.objects.all()
     fo = models.food_manage.objects.all()
-    # someFunc.sum_allprice()
+    someFunc.sum_allprice()
     return render(request, 'back/order.html', {'order':order, 'tb':tb, 'fo':fo})
 
 
@@ -317,45 +317,27 @@ def order_add_ajax(request):
     try:
         t = request.POST.get('tablename_id')
         f = request.POST.get('food_cho_id')
-        fc = request.POST.get('food_count')
-        w = models.order.objects.filter(table_id=t)
-        if w: #order存在
-            od_id = w.first().id
-            print('order %s is exist' %t)
-            # oi = models.order.objects.filter(table_id=t).first().id
-            tn = models.food_choose.objects.filter(table_n=t,food_cho_id=f).first()
-            # fc_id = None
-            if tn:  #order和food_cho_id都存在
-                print('food_cho_id %s is exist' %f)
-                fc_id = None
-                new_fc_count = int(tn.food_count) + int(fc)
-                nf = {'food_cho_id': f, 'food_count': tn.food_count, 'table_n': t}
-                models.food_choose.objects.filter(**nf).update(food_count=str(new_fc_count))
-                # fc_id = models.food_choose.objects.filter(food_cho_id=f, table_n=t, food_count=str(new_fc_count))
-            else: #order存在，但food_cho_id不存在
-                print('food_cho_id %s is not exist' %f)
-                nf = {'food_cho_id':f, 'food_count':fc, 'table_n':t}
-                models.food_choose.objects.create(**nf)
-                fc_id = models.food_choose.objects.filter(**nf).first().id
-        else: #order不存在
-            print('order %s is not exist')
-            #添加这个新的order
-            models.order.objects.create(table_id=t)
-            od_id = models.order.objects.filter(table_id=t).first().id
-            print('food_cho_id %s is not exist' % f)
-            nf = {'food_cho_id': f, 'food_count': fc, 'table_n': t}
-            models.food_choose.objects.create(**nf)
-            fc_id = models.food_choose.objects.filter(**nf).first().id
-        if fc_id:
-            od_dict = {'thisorder_id':od_id, 'thisfc_id':fc_id}
-            q = models.order_detail.objects.filter(**od_dict)
-            if q:
-                print('order_detail %s is exist' %q.first().id)
+        fcount = request.POST.get('food_count')
+        v = request.POST.get('viptype')
+        o = request.POST.get('orderstatus')
+        # w = models.order.objects.filter(table_id=t)
+        nod = {'table_id':t, 'orderstatus':o, 'vip_type':v}
+        cnod = models.order.objects.create(**nod)
+        if cnod:
+            nod_id = models.order.objects.filter(**nod).first()
+            nfc = {'food_cho_id':f, 'food_count':fcount, 'order_n_id':nod_id.id}
+            cnfc = models.food_choose.objects.create(**nfc)
+            # print(t,f,fcount,v,o)
+            # print('nod:%s, nfc:%s, nod_id:%s' %(nod,nfc,nod_id))
+            if cnfc:
+                ret['status'] = True
+                ret['info'] = '添加成功'
             else:
-                print('order_detail is not exist')
-                models.order_detail.objects.create(**od_dict)
-        ret['status'] = True
-        ret['info'] = '添加成功'
+                ret['status'] = False
+                ret['info'] = '添加失败'
+        else:
+            ret['status'] = False
+            ret['info'] = '添加失败'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误或请输入数字'
@@ -367,11 +349,9 @@ def order_del_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
-        m = models.order.objects.filter(id=i).first().table_id
-        fd = models.food_choose.objects.filter(table_n=m).delete()
-        odd = models.order_detail.objects.filter(thisorder_id=i).delete()
-        ord = models.order.objects.filter(id=i).delete()
-        if fd and odd and ord:
+        m = models.order.objects.filter(id=i).delete()
+        fd = models.food_choose.objects.filter(order_n=i).delete()
+        if m and fd:
             ret['status'] = True
             ret['info'] = '删除成功'
         else:
@@ -388,14 +368,13 @@ def order_comfirm_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
-        m = models.order.objects.filter(id=i).first().table_id
-        otm = models.table_manage.objects.filter(id=m).first().ts_id
-        if otm == 1:
+        m = models.order.objects.filter(id=i).first().orderstatus
+        if m == 1:
             ret['status'] = False
             ret['info'] = '此订单已结算，无需再次结算'
         else:
-            tm = models.table_manage.objects.filter(id=m).update(ts_id=1)
-            if m and tm:
+            tm = models.order.objects.filter(id=i).update(orderstatus=1)
+            if tm:
                 ret['status'] = True
                 ret['info'] = '订单结算成功'
             else:
@@ -411,25 +390,24 @@ def order_comfirm_ajax(request):
 
 @auth
 def order_detail(request,nid):
+    fo = models.food_manage.objects.all()
     od = models.food_choose.objects.filter(order_n_id=nid)
-    for i in od:
-        print(i.order_n.vip_type)
-    # if od:
-    #     someFunc.sum_allprice()
-    #     all_price = od.first().thisorder.all_price
-    # else:
-    #     all_price = 0.00
-    return render(request,'back/order_detail.html',{'od':od})
+    # for i in od:
+    #     print(i.order_n.vip_type)
+    if od:
+        someFunc.sum_allprice()
+        all_price = od.first().order_n.all_price
+    else:
+        all_price = 0.00
+    return render(request,'back/order_detail.html',{'od':od, 'all_price':all_price, 'fo':fo})
 
 @auth #删除单个菜品
 def fc_del_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
-        m = models.order_detail.objects.filter(id=i).first().thisfc_id
-        fd = models.food_choose.objects.filter(id=m).delete()
-        ord = models.order_detail.objects.filter(id=i).delete()
-        if m and fd and ord:
+        fd = models.food_choose.objects.filter(id=i).delete()
+        if fd:
             ret['status'] = True
             ret['info'] = '删除成功'
         else:
@@ -447,7 +425,6 @@ def fcount_comfirm(request):
     try:
         i = request.POST.get('id')
         c = request.POST.get('nfcount')
-        print(i,c)
         if int(c):
             p = models.food_choose.objects.filter(id=i).first().food_count
             if c != p:

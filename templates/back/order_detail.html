@@ -7,6 +7,22 @@
 {% block body %}
           <div class="cont">
 
+          <div>
+                <h3>点餐</h3>
+                <form id="fc_add_form">
+                    {% csrf_token %}
+                    <select name="food_cho_id">
+                        {% for r in fo %}
+                            <option value="{{ r.id }}">
+                                {{ r.foodname }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="food_count" placeholder="数量">
+                    <input type="button" value="添加" id="orderadd">
+                </form>
+            </div>
+
           <h3>订单详情</h3>
           <div>
                 <form>
@@ -63,10 +79,10 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         if(obj.status){
-                            alert(obj.error);
+                            alert(obj.info);
                             location.reload()
                         }else {
-                            alert(obj.error);
+                            alert(obj.info);
                         }
                    }
                 })

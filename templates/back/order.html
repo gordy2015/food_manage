@@ -21,6 +21,10 @@
                         {% endfor %}
                     </select>
                     <input type="text" name="food_count" placeholder="数量">
+                    <select name="viptype">
+                        <option value="0">普通会员</option>
+                        <option value="1">VIP会员</option>
+                    </select>
                     <select name="orderstatus">
                         <option value="0">未结账</option>
                         <option value="1">已结账</option>
@@ -35,7 +39,7 @@
                         <thead>
                             <tr>
                                 <td>订单编号</td>
-                                <td>餐桌名</td>
+                                <td>所属餐桌</td>
                                 <td>下单日期</td>
                                 <td>是否VIP</td>
                                 <td>总费用</td>
@@ -45,14 +49,14 @@
                         </thead>
                         <tbody>
                             {% for row in order %}
-                                {% if row.table.ts_id != 1 %}
+                                {% if row.orderstatus != 1 %}
                                     <tr tid="{{ row.id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
                                     <td>{{ row.ordertime }}</td>
                                     {% if row.vip_type == 0 %}
                                         <td>否</td>
-                                        {% else %}
+                                        {% elif row.vip_type == 1 %}
                                         <td>是</td>
                                     {% endif %}
                                     <td>{{ row.all_price }}</td>
@@ -87,7 +91,7 @@
                         </thead>
                         <tbody>
                             {% for row in order %}
-                                {% if row.table.ts_id == 1 %}
+                                {% if row.orderstatus == 1 %}
                                     <tr tid="{{ row.id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
