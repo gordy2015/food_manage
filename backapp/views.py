@@ -29,7 +29,6 @@ def tableadd_ajax(request):
     ret = {'status': True, 'info': 'None', 'data': None}
     try:
         t = request.POST.get('tablename')
-        print(t)
         if t.strip():  #判断输入的内容是否为空
             result = models.table_manage.objects.create(tablename=t)
             if result:
@@ -220,7 +219,6 @@ def food_add_ajax(request):
         t = request.POST.get('foodtypename')
         if f and p and v and t:
             fo = {'foodname':f,'price':p,'vip_price':v,'foodtype_id':t}
-            print(fo)
             w = models.food_manage.objects.create(**fo)  #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
             if w:
                 ret['info'] = '添加成功'
@@ -438,6 +436,31 @@ def fcount_comfirm(request):
         else:
             ret['status'] = False
             ret['info'] = '请输入数量'
+    except Exception as e:
+        ret['status'] = False
+        ret['info'] = '请求错误或请输入数字'
+        print('EXCEPTION:%s' % e)
+    return HttpResponse(json.dumps(ret))
+
+def fc_add(request):
+    ret = {'status': True, 'info': None, 'data': None}
+    try:
+        i = request.POST.get('new_food_cho_id')
+        c = request.POST.get('new_food_count')
+        print(i,c)
+        # if int(c):
+        #     p = models.food_choose.objects.filter(id=i).first().food_count
+        #     if c != p:
+        #         q = models.food_choose.objects.filter(id=i).update(food_count=c)
+        #         if q:
+        #             ret['status'] = True
+        #             ret['info'] = '修改成功'
+        #         else:
+        #             ret['status'] = False
+        #             ret['info'] = '修改失败'
+        # else:
+        #     ret['status'] = False
+        #     ret['info'] = '请输入数量'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误或请输入数字'

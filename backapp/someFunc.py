@@ -50,17 +50,17 @@ def sum_allprice_oldver01():
 #for v0.2
 def sum_allprice():
     order = models.order.objects.all()
-    oder_status = order.first().orderstatus
     fc = models.food_choose.objects.all()
     w = order.values('id')
-    print(w)
+    # print(w)
     for i in w:
         # print(i['id'])
         order_id = i['id']
-        q = models.food_choose.objects.filter(order_n_id=i['id'])
-        old_allprice = models.order.objects.filter(id=order_id).first().all_price
-        co = models.food_choose.objects.filter(order_n_id=i['id']).count()
-        print(co)
+        q = models.food_choose.objects.filter(order_n_id=order_id)
+        o = models.order.objects.filter(id=order_id).first()
+        old_allprice = o.all_price
+        vip_type = o.vip_type
+        co = q.count()
         if co > 1:
             u = models.food_choose.objects.filter(order_n_id=order_id).values('food_cho_id', 'food_count')
             # print(u)
@@ -68,7 +68,7 @@ def sum_allprice():
             for i in u:
                 food_cho_id = i['food_cho_id']
                 food_count = i['food_count']
-                if oder_status == 0:
+                if vip_type == 0:
                     s = models.food_manage.objects.filter(id=food_cho_id).first().price
                 else:
                     s = models.food_manage.objects.filter(id=food_cho_id).first().vip_price
@@ -80,7 +80,7 @@ def sum_allprice():
             u = models.food_choose.objects.filter(order_n_id=order_id).values('food_cho_id', 'food_count')
             food_cho_id = u[0]['food_cho_id']
             food_count = u[0]['food_count']
-            if oder_status == 0:
+            if vip_type == 0:
                 s = models.food_manage.objects.filter(id=food_cho_id).first().price
             else:
                 s = models.food_manage.objects.filter(id=food_cho_id).first().vip_price

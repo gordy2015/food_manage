@@ -11,15 +11,15 @@
                 <h3>点餐</h3>
                 <form id="fc_add_form">
                     {% csrf_token %}
-                    <select name="food_cho_id">
+                    <select id="new_food_cho_id">
                         {% for r in fo %}
                             <option value="{{ r.id }}">
                                 {{ r.foodname }}
                             </option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="food_count" placeholder="数量">
-                    <input type="button" value="添加" id="orderadd">
+                    <input type="text" id="new_food_count" placeholder="数量">
+                    <input type="button" value="添加" id="fc_add">
                 </form>
             </div>
 
@@ -87,6 +87,28 @@
                    }
                 })
             }
+        });
+
+        $('.fc_add').click(function () {
+                var new_food_cho_id = $('#new_food_cho_id').val();
+                var new_food_count = $('#new_food_count').val();
+                $.ajax({
+                    url: "/back/fc_add/",
+                    type: "POST",
+                    data: {id: $(this).parent().parent().attr("tid"), 'new_food_cho_id':new_food_cho_id, 'new_food_count':new_food_count },
+                    beforeSend: function(xhr,settings){
+                        xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                    },
+                    success: function (data) {
+                        var obj = JSON.parse(data);
+                        if(obj.status){
+                            alert(obj.info);
+                            location.reload()
+                        }else {
+                            alert(obj.info);
+                        }
+                   }
+                })
         });
 
         //点击”修改数量“ 实现文字变成input框，并可保存

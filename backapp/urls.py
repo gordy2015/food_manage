@@ -61,6 +61,7 @@ urlpatterns = [
 
     url(r'^fc_del_ajax/$', views.fc_del_ajax),
     url(r'^fcount_comfirm/$', views.fcount_comfirm),
+    url(r'^fc_add/$', views.fc_add),
 
 
 
