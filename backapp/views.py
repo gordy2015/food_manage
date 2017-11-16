@@ -466,3 +466,7 @@ def fc_add(request):
         ret['info'] = '请求错误或请输入数字'
         print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
+
+
+def order_edit_comfirm(request):
+    pass
