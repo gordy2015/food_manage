@@ -1,4 +1,5 @@
 {% extends 'back/master.html' %}
+{% load fee %}
 
 {% block title %} 餐厅订单 {% endblock %}
 
@@ -53,7 +54,7 @@
                                     <tr tid="{{ row.id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
-                                    <td id="ot_{{ row.id }}">{{ row.ordertime }}</td>
+                                    <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
                                     {% if row.vip_type == 0 %}
                                         <td id="vt_{{ row.id }}">否</td>
                                         {% elif row.vip_type == 1 %}
@@ -96,7 +97,7 @@
                                     <tr tid="{{ row.id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ row.table.tablename }}</td>
-                                    <td>{{ row.ordertime }}</td>
+                                    <td>{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
                                     {% if row.vip_type == 0 %}
                                         <td>否</td>
                                         {% elif row.vip_type == 1 %}
@@ -212,13 +213,12 @@
         function orderedit(id,tableid,viptype,orderstatus) {
             var oldor = $('#orderedit_'+id).parent().parent().children();
             var oldordertime = oldor.eq(2).text();
-{#            var oid = oldor.parent().attr('tid');#}
+           // var oid = oldor.parent().attr('tid');
             var oldtablename = oldor.eq(1).text();
             var oldviptype = oldor.eq(3).text();
             var oldorderstatus = oldor.eq(5).text();
-            console.log(oldtablename,oldordertime,oldviptype,oldorderstatus);
-
-
+            var oldordertime = oldordertime.replace(" ", "%");
+            //console.log(oldtablename,oldordertime,oldviptype,oldorderstatus);
 
             var ntn = '<select name="new_tablename" id=ntn_'+id+'> {% for row in tb %} <option value="{{ row.id }}">{{ row.tablename }}</option> {% endfor %} </select>';
             $('#tn_'+id).html(ntn);
@@ -227,20 +227,22 @@
             var nvt = '<select name="new_viptype" id=nvt_'+id+'> <option value="0">否</option> <option value="1">是</option> </select>';
             $('#vt_'+id).html(nvt);
             $('#nvt_'+id).val(viptype);
-            var nos = '<select name="new_orderstatus" id=nos_'+id+'> <option value="0">未结帐</option> <option value="1">已结帐</option> </select>';
+            var nos = '<select name="new_orderstatus" id=nos_'+id+'><option value="0">未结帐</option> <option value="1">已结帐</option> </select>';
             $('#os_'+id).html(nos);
             $('#nos_'+id).val(orderstatus);
-            
-            noe = '<a id=noe_'+id+' onclick="orderedit_comfirm">确认编辑</a>|<a onclick="orderedit_cancel('+id+','+oldtablename+','+oldordertime+','+oldviptype+','+oldorderstatus+')">取消编辑</a>'
-            $('#orderedit_'+id).html(noe)
 
+            var noe = '<a id=noe_'+id+' onclick="orderedit_comfirm">确认编辑</a>|<a onclick=orderedit_cancel("'+id+'","'+oldtablename+'","'+oldordertime+'","'+oldviptype+'","'+oldorderstatus+'");>取消编辑</a>';
+            //var noe = '<a onclick=orderedit_cancel('+id+',"'+oldtablename+'","'+oldordertime+'","'+oldviptype+'","'+oldorderstatus+'");>取消编辑</a>';
+            $('#orderedit_'+id).html(noe);
         };
 
         function orderedit_cancel(id,tablename,ordertime,viptype,orderstatus) {
-            console.log(id,tablename,ordertime,viptype,orderstatus)
-           // var ntn = '<td id="tn_'+id+'">'+tablename+'</td>';
-            //$('#tn_'+id).html(ntn);
-            //$('#ntn_'+id).val(tableid);
+            var oldordertime = ordertime.replace("%"," ");
+            console.log(id,tablename,oldordertime,viptype,orderstatus);
+            $('#tn_'+id).text(tablename);
+            $('#os_'+id).text(orderstatus);
+            console.log('#tn_'+id);
+
             //$('#ot_'+id).html('<input type="text" value="'+oldordertime+'" id="ot_'+id+'">');  //定餐时间
 {#            var nvt = '<select name="new_viptype" id=nvt_'+id+'> <option value="0">否</option> <option value="1">是</option> </select>';#}
 {#            $('#vt_'+id).html(nvt);#}
@@ -252,9 +254,9 @@
 {#            $('#orderedit_'+id).html(noe)#}
         };
 
-        function fcount_comfirm(id,vip_type) {
+        function orderedit_comfirm(id,vip_type) {
             var nfcount = $('.new_fcount').val();   //取出新填入的food_count的值
-            $('.orderedit2').parent().parent().attr('tid')
+            $('.orderedit2').parent().parent().attr('tid');
             $.ajax({
                 type: "post",
                 url: "/back/order_edit_comfirm/",
@@ -266,13 +268,13 @@
                     var obj = JSON.parse(data);
                     if(obj.status){
 {#                            alert(obj.info);#}
-                            location.reload()
+                            location.reload();
                         }else {
                             alert(obj.info);
                         }
                 }
             });
-            fcount_cancel(id,fcount)
+            fcount_cancel(id,fcount);
         };
         //
 

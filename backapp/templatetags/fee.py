@@ -1,6 +1,7 @@
 
 from django import template
 from django.utils.safestring import mark_safe
+import time
 
 register = template.Library()
 
@@ -29,3 +30,7 @@ def allfee(v1):
 # def jiajingze(a1,a2):
 #     print(a2,type(a2))
 #     return a1 + str(a2)
+
+def normaltime(v1):
+    t = time.strftime("%Y-%m-%d %H:%M:%S", v1)
+    print(t)

@@ -73,7 +73,7 @@ def sum_allprice():
                 else:
                     s = models.food_manage.objects.filter(id=food_cho_id).first().vip_price
                 new_allprice = new_allprice + int(s) * int(food_count)
-                print('new_allprice: %s %s' %(type(new_allprice), new_allprice))
+                # print('new_allprice: %s %s' %(type(new_allprice), new_allprice))
             if new_allprice != old_allprice:
                 models.order.objects.filter(id=order_id).update(all_price=new_allprice)
         elif co == 1:
