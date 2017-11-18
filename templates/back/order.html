@@ -6,7 +6,7 @@
 {% block body %}
           <div class="cont">
             <div>
-                <h3>添加订单</h3>
+                <h3>添加新订单</h3>
                 <form id="orderadd_form">
                     {% csrf_token %}
                     <select name="tablename_id">
@@ -52,7 +52,7 @@
                             {% for row in order %}
                                 {% if row.orderstatus != 1 %}
                                     <tr tid="{{ row.id }}">
-                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ row.ou_id }}</td>
                                     <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
                                     <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
                                     {% if row.vip_type == 0 %}
@@ -66,7 +66,7 @@
                                         {% elif row.orderstatus == 1 %}
                                         <td id="os_{{ row.id }}">已结账</td>
                                     {% endif %}
-                                        <td><a id="orderedit_{{ row.id }}" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
+                                        <td><a class="orderedit_{{ row.id }}" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
                                     | <a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
                                     </tr>
                                 {% endif %}
@@ -95,21 +95,22 @@
                             {% for row in order %}
                                 {% if row.orderstatus == 1 %}
                                     <tr tid="{{ row.id }}">
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ row.table.tablename }}</td>
-                                    <td>{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
+                                    <td>{{ row.ou_id }}</td>
+                                    <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
+                                    <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
                                     {% if row.vip_type == 0 %}
-                                        <td>否</td>
+                                        <td id="vt_{{ row.id }}">否</td>
                                         {% elif row.vip_type == 1 %}
-                                        <td>是</td>
+                                        <td id="vt_{{ row.id }}">是</td>
                                     {% endif %}
                                     <td>{{ row.all_price }}</td>
                                     {% if row.orderstatus == 0 %}
-                                        <td>未结账</td>
+                                        <td id="os_{{ row.id }}">未结账</td>
                                         {% elif row.orderstatus == 1 %}
-                                        <td>已结账</td>
+                                        <td id="os_{{ row.id }}">已结账</td>
                                     {% endif %}
-                                    <td><a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
+                                    <td><a class="orderedit_{{ row.id }}" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
+                                        |<a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
                                     </tr>
                                {% endif %}
                             {% endfor %}
@@ -189,7 +190,7 @@
         $('.ispay').click(function () {
             if (confirm("确认已结算？")) {
                 $.ajax({
-                    url: "/back/order_comfirm_ajax/",
+                    url: "/back/order_pay_ajax/",
                     type: "POST",
                     data: {id: $(this).parent().parent().attr("tid")},
                     beforeSend: function(xhr,settings){
@@ -211,72 +212,64 @@
 
         //点击”修改数量“ 实现文字变成input框，并可保存
         function orderedit(id,tableid,viptype,orderstatus) {
-            var oldor = $('#orderedit_'+id).parent().parent().children();
-            var oldordertime = oldor.eq(2).text();
-           // var oid = oldor.parent().attr('tid');
+            var oldor = $('.orderedit_'+id).parent().parent().children();
+            var oldordertime = oldor.eq(2).text();      //这里的时间取到的是数据库里的格式，中间有个空格
             var oldtablename = oldor.eq(1).text();
             var oldviptype = oldor.eq(3).text();
             var oldorderstatus = oldor.eq(5).text();
-            var oldordertime = oldordertime.replace(" ", "%");
+            var tra_ordertime = oldordertime.replace(" ", "T");  //时间格式换成datetime-local的格式，中间为T
             //console.log(oldtablename,oldordertime,oldviptype,oldorderstatus);
+            console.log(oldordertime,tra_ordertime)
+            $('#ot_'+id).html('<input type="datetime-local" value="'+tra_ordertime+'">');  //定餐时间
 
-            var ntn = '<select name="new_tablename" id=ntn_'+id+'> {% for row in tb %} <option value="{{ row.id }}">{{ row.tablename }}</option> {% endfor %} </select>';
+            var ntn = '<select> {% for row in tb %} <option value="{{ row.id }}">{{ row.tablename }}</option> {% endfor %} </select>';
             $('#tn_'+id).html(ntn);
-            $('#ntn_'+id).val(tableid);
-            $('#ot_'+id).html('<input type="text" value="'+oldordertime+'" id="ot_'+id+'">');  //定餐时间
-            var nvt = '<select name="new_viptype" id=nvt_'+id+'> <option value="0">否</option> <option value="1">是</option> </select>';
+            $('#tn_'+id+' select').val(tableid);
+
+            var nvt = '<select> <option value="0">否</option> <option value="1">是</option> </select>';
             $('#vt_'+id).html(nvt);
-            $('#nvt_'+id).val(viptype);
-            var nos = '<select name="new_orderstatus" id=nos_'+id+'><option value="0">未结帐</option> <option value="1">已结帐</option> </select>';
+            $('#vt_'+id+' select').val(viptype);
+
+            var nos = '<select><option value="0">未结帐</option> <option value="1">已结帐</option> </select>';
             $('#os_'+id).html(nos);
-            $('#nos_'+id).val(orderstatus);
+            $('#os_'+id+' select').val(orderstatus);
 
-            var noe = '<a id=noe_'+id+' onclick="orderedit_comfirm">确认编辑</a>|<a onclick=orderedit_cancel("'+id+'","'+oldtablename+'","'+oldordertime+'","'+oldviptype+'","'+oldorderstatus+'");>取消编辑</a>';
-            //var noe = '<a onclick=orderedit_cancel('+id+',"'+oldtablename+'","'+oldordertime+'","'+oldviptype+'","'+oldorderstatus+'");>取消编辑</a>';
-            $('#orderedit_'+id).html(noe);
+            var noe = '<a onclick="orderedit_comfirm('+id+')">确认编辑</a>|<a onclick=orderedit_cancel("'+id+'");>取消编辑</a>';
+            $('.orderedit_'+id).html(noe);
         };
 
-        function orderedit_cancel(id,tablename,ordertime,viptype,orderstatus) {
-            var oldordertime = ordertime.replace("%"," ");
-            console.log(id,tablename,oldordertime,viptype,orderstatus);
-            $('#tn_'+id).text(tablename);
-            $('#os_'+id).text(orderstatus);
-            console.log('#tn_'+id);
+        function orderedit_cancel(id) {
+            //var oldordertime = ordertime.replace("T"," ");  //时间格式换回数据库里的格式，中间为空格
+            //$('#tn_'+id).text(id);
+            //$('#os_'+id).text(orderstatus);
+            location.href='/back/order/';
 
-            //$('#ot_'+id).html('<input type="text" value="'+oldordertime+'" id="ot_'+id+'">');  //定餐时间
-{#            var nvt = '<select name="new_viptype" id=nvt_'+id+'> <option value="0">否</option> <option value="1">是</option> </select>';#}
-{#            $('#vt_'+id).html(nvt);#}
-{#            $('#nvt_'+id).val(viptype);#}
-{#            var nos = '<select name="new_orderstatus" id=nos_'+id+'> <option value="0">未结帐</option> <option value="1">已结帐</option> </select>';#}
-{#            $('#os_'+id).html(nos);#}
-{#            $('#nos_'+id).val(orderstatus);#}
-{#            noe = '<a id=noe_'+id+' onclick="orderedit_comfirm">确认编辑</a>|<a onclick="orderedit_cancel('+id+','+tableid+','+oldordertime+','+viptype+','+orderstatus+')">取消编辑</a>'#}
-{#            $('#orderedit_'+id).html(noe)#}
         };
 
-        function orderedit_comfirm(id,vip_type) {
-            var nfcount = $('.new_fcount').val();   //取出新填入的food_count的值
-            $('.orderedit2').parent().parent().attr('tid');
+        function orderedit_comfirm(id) {
+            var ntn = $('#tn_' + id + ' select').val();   //取出新填入的tablename值
+            var ntime = $('#ot_' + id + ' input').val().replace("T"," ");  //时间格式换回数据库里的格式，中间为空格
+            var nvt = $('#vt_' + id + ' select').val();
+            var nos = $('#os_' + id + ' select').val();
+            //console.log(ntn,ntime,nvt,nos);
             $.ajax({
                 type: "post",
                 url: "/back/order_edit_comfirm/",
-                data: {id: id, nfcount:nfcount},
+                data: {id: id, ntn:ntn, ntime:ntime, nvt:nvt, nos:nos},
                 beforeSend: function (xhr, settings) {
                     xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
                 },
                 success: function (data) {
                     var obj = JSON.parse(data);
                     if(obj.status){
-{#                            alert(obj.info);#}
+                            alert(obj.info);
                             location.reload();
                         }else {
                             alert(obj.info);
                         }
                 }
             });
-            fcount_cancel(id,fcount);
         };
-        //
 
 
         $(document).ready(function() {

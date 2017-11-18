@@ -318,15 +318,15 @@ def order_add_ajax(request):
         fcount = request.POST.get('food_count')
         v = request.POST.get('viptype')
         o = request.POST.get('orderstatus')
-        # w = models.order.objects.filter(table_id=t)
-        nod = {'table_id':t, 'orderstatus':o, 'vip_type':v}
+        ou_id = someFunc.randomnum()
+        nod = {'table_id':t, 'orderstatus':o, 'vip_type':v, 'ou_id':ou_id}
         cnod = models.order.objects.create(**nod)
         if cnod:
-            nod_id = models.order.objects.filter(**nod).first()
-            nfc = {'food_cho_id':f, 'food_count':fcount, 'order_n_id':nod_id.id}
+            order_id = models.order.objects.filter(ou_id=ou_id).first().id
+            nfc = {'food_cho_id':f, 'food_count':fcount, 'ou_id':ou_id, 'order_n_id':order_id}
             cnfc = models.food_choose.objects.create(**nfc)
-            # print(t,f,fcount,v,o)
-            # print('nod:%s, nfc:%s, nod_id:%s' %(nod,nfc,nod_id))
+            # # print(t,f,fcount,v,o)
+            # # print('nod:%s, nfc:%s, nod_id:%s' %(nod,nfc,nod_id))
             if cnfc:
                 ret['status'] = True
                 ret['info'] = '添加成功'
@@ -362,7 +362,32 @@ def order_del_ajax(request):
     return HttpResponse(json.dumps(ret))
 
 @auth
-def order_comfirm_ajax(request):
+def order_edit_comfirm(request):
+    ret = {'status': True, 'info': None, 'data': None}
+    try:
+        i = request.POST.get('id')
+        ntn = request.POST.get('ntn')
+        ntime = request.POST.get('ntime')
+        nvt = request.POST.get('nvt')
+        nos = request.POST.get('nos')
+        if ntn and ntime and nvt and nos:
+            order_edit_dic = {'table_id':ntn, 'ordertime':ntime, 'vip_type':nvt, 'orderstatus':nos}
+            m = models.order.objects.filter(id=i).update(**order_edit_dic)
+            if m:
+                ret['status'] = True
+                ret['info'] = '订单修改成功'
+            else:
+                ret['status'] = False
+                ret['info'] = '订单修改失败'
+    except Exception as e:
+        ret['status'] = False
+        ret['info'] = '请求错误'
+        print('EXCEPTION:%s' % e)
+    return HttpResponse(json.dumps(ret))
+
+
+@auth
+def order_pay_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
@@ -389,15 +414,15 @@ def order_comfirm_ajax(request):
 @auth
 def order_detail(request,nid):
     fo = models.food_manage.objects.all()
-    od = models.food_choose.objects.filter(order_n_id=nid)
+    fc = models.food_choose.objects.filter(order_n_id=nid)
     # for i in od:
     #     print(i.order_n.vip_type)
-    if od:
+    if fc:
         someFunc.sum_allprice()
-        all_price = od.first().order_n.all_price
+        all_price = fc.first().order_n.all_price
     else:
         all_price = 0.00
-    return render(request,'back/order_detail.html',{'od':od, 'all_price':all_price, 'fo':fo})
+    return render(request,'back/order_detail.html',{'fc':fc, 'all_price':all_price, 'fo':fo})
 
 @auth #删除单个菜品
 def fc_del_ajax(request):
@@ -442,25 +467,36 @@ def fcount_comfirm(request):
         print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
 
-def fc_add(request):
+def fc_add_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
-        i = request.POST.get('new_food_cho_id')
-        c = request.POST.get('new_food_count')
-        print(i,c)
-        # if int(c):
-        #     p = models.food_choose.objects.filter(id=i).first().food_count
-        #     if c != p:
-        #         q = models.food_choose.objects.filter(id=i).update(food_count=c)
-        #         if q:
-        #             ret['status'] = True
-        #             ret['info'] = '修改成功'
-        #         else:
-        #             ret['status'] = False
-        #             ret['info'] = '修改失败'
-        # else:
-        #     ret['status'] = False
-        #     ret['info'] = '请输入数量'
+        i = request.POST.get('id')
+        f = request.POST.get('new_food_cho_id')
+        fcount = request.POST.get('new_food_count')
+        if int(fcount):
+            ouid = models.food_choose.objects.filter(id=i).first().ou_id
+            order_nid = models.food_choose.objects.filter(id=i).first().order_n_id
+            query_fc = {'food_cho_id': f, 'ou_id': ouid, 'order_n_id': order_nid}
+            q = models.food_choose.objects.filter(**query_fc)
+            p = None
+            if q:  #如果所选的菜品已存在，则在原数量的基础上增加上新的数量
+                old_fcount = models.food_choose.objects.filter(**query_fc)
+                if old_fcount:
+                    new_fcount = int(fcount) + old_fcount.first().food_count
+                    # print(old_fcount.first().food_count, int(fcount), type(fcount), new_fcount)
+                    p = models.food_choose.objects.filter(**query_fc).update(food_count=new_fcount)
+            else:
+                new_fc = {'food_count':fcount, 'food_cho_id':f, 'ou_id':ouid, 'order_n_id':order_nid}
+                p = models.food_choose.objects.create(**new_fc)
+            if p:
+                ret['status'] = True
+                ret['info'] = '添加成功'
+            else:
+                ret['status'] = False
+                ret['info'] = '添加失败'
+        else:
+            ret['status'] = False
+            ret['info'] = '请输入数量'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误或请输入数字'
@@ -468,5 +504,3 @@ def fc_add(request):
     return HttpResponse(json.dumps(ret))
 
 
-def order_edit_comfirm(request):
-    pass

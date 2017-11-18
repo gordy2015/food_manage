@@ -48,11 +48,13 @@ class order(models.Model):
         (1, u'已结账'),
     )
     orderstatus = models.IntegerField(choices=ostatus,default=0)
+    ou_id = models.IntegerField()
 
 
 class food_choose(models.Model):
-    food_count = models.CharField(max_length=12,default=1)
+    food_count = models.IntegerField(max_length=12,default=1)
     food_cho = models.ForeignKey(to='food_manage', to_field='id')
+    ou_id = models.IntegerField()
     # table_n = models.CharField(max_length=12,null=True)
     order_n = models.ForeignKey(to='order', to_field='id')
 
