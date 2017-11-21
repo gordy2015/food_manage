@@ -6,24 +6,24 @@
           <div class="cont">
             <div>
                 <h3>添加菜品</h3>
-                <form id="foodadd_form">
+                <form id="foodadd_form" class="form-inline">
                     {% csrf_token %}
-                    <input type="text" name="foodname" placeholder="菜名">
-                    <input type="text" name="price" placeholder="价格">
-                    <input type="text" name="vip_price" placeholder="会员价格">
-                    <select name="foodtypename">
+                    <input type="text" class="form-control input-sm" name="foodname" placeholder="菜名">
+                    <input type="text" class="form-control input-sm" name="price" placeholder="价格">
+                    <input type="text" class="form-control input-sm" name="vip_price" placeholder="会员价格">
+                    <select name="foodtypename" class="form-control input-sm" style="width: auto">
                         {% for row in foodtype %}
                             <option value="{{ row.id }}">{{ row.foodtypename }}</option>
                         {% endfor %}
                     </select>
-                    <input type="button" value="添加" id="foodadd">
+                    <input type="button" value="添加" id="foodadd" class="btn btn-primary input-sm">
                     <p id="err_food_add_ajax" style="color: red"></p>
                 </form>
             </div>
             <h3>菜品列表</h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
-                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
                         <thead>
                             <tr>
                                 <td>菜品编号</td>

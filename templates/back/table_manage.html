@@ -7,18 +7,18 @@
 
             <div>
                 <h3>添加餐桌</h3>
-                <form>
-                    <input type="text" name="tablename" placeholder="新的餐桌名" id="new_tablename">
-                    <input type="submit" value="添加" id="tableadd_confirm">
+                <form class="form-inline">
+                    <input type="text" name="tablename" placeholder="新的餐桌名" id="new_tablename" class="form-control input-sm">
+                    <input type="submit" value="添加" id="tableadd_confirm" class="btn btn-primary input-sm">
                 </form>
             </div>
 
             <div id="tableedit" class="hide">
-                <form id="tableedit_form">
+                <form id="tableedit_form" class="form-inline" style="padding:10px 0">
                     <input type="hidden" name="tid">
-                    <input type="text" name="tablename" id="tablename2" placeholder="桌名">
-                    <input type="submit"  value="确认编辑" id="tableedit_confirm">
-                    <input type="button"  value="取消编辑" class="tableedit_cancel">
+                    <input type="text" name="tablename" id="tablename2" placeholder="桌名" class="form-control input-sm">
+                    <input type="submit"  value="确认编辑" id="tableedit_confirm" class="btn btn-primary input-sm">
+                    <input type="button"  value="取消编辑" class="tableedit_cancel btn btn-default input-sm">
 
                 </form>
             </div>
@@ -26,7 +26,7 @@
             <h3>餐桌列表 <span id="err_table_edit_ajax" style="color: red"></span></h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
-                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
                         <thead>
                             <tr>
                                 <td>编号</td>

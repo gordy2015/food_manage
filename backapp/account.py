@@ -51,14 +51,15 @@ def logout(request):
 
 class user_infoForm(forms.Form):
     username = fields.CharField(max_length=16,label='新用户名',
-                                widget=forms.widgets.TextInput(attrs={'placeholder':'新用户名'}))
+                                widget=forms.widgets.TextInput(attrs={'placeholder':'新用户名','class': "form-control input-sm"}))
     password = fields.CharField(max_length=32,
-                                widget=forms.widgets.PasswordInput(attrs={'placeholder':'密码'}),label='密码')
+                                widget=forms.widgets.PasswordInput(attrs={'placeholder':'密码','class': "form-control input-sm"}),label='密码')
     email = fields.EmailField(max_length=32,
                               error_messages={'invalid':'邮箱格式错误'},
-                               widget=widgets.TextInput(attrs={'placeholder':'邮箱'}))
+                               widget=widgets.TextInput(attrs={'placeholder':'邮箱','class': "form-control input-sm"}))
     grouptype_id = fields.ChoiceField(
         choices=models.user_group.objects.values_list('id','groupname'),
+        widget=widgets.Select(attrs={'class': "form-control input-sm"})
     )
     def __init__(self, *args, **kwargs):
         super(user_infoForm,self).__init__(*args,**kwargs)

@@ -57,26 +57,24 @@
 <body>
 
     <div>
+           <div style="height: 48px;background-color: #2459a2;color: white">被玩坏的小鸟点餐系统
+            {% if request.session.username %}
+                &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
+                &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
+            {% endif %}
+         </div>
 
 
-            <div style="height: 48px;background-color: #2459a2;color: white">被玩坏的小鸟点餐系统
-                {% if request.session.username %}
-                    &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
-                    &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
-                {% endif %}
-             </div>
-
-
-
-        <div class="list-group">
-            <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: ghostwhite;">
-                <a class="list-group-item menu" href="/back/user_info/">用户管理</a>
-                <a class="list-group-item menu" href="/back/group_info/">用户组管理</a>
-                <a class="list-group-item menu" href="/back/table_manage/">餐桌管理</a>
-                <a class="list-group-item menu" href="/back/foodtype_manage/">菜系管理</a>
-                <a class="list-group-item menu" href="/back/food_manage/">菜品管理</a>
-                <a class="list-group-item menu" href="/back/order/">订单管理</a>
-            </div>
+        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: ghostwhite;">
+            <ul class="nav nav-pills nav-stacked">
+            <li><a class="menu"  href="/back/user_info/">用户管理</a></li>
+            <li><a class="menu"  href="/back/group_info/">用户组管理</a></li>
+            <li><a class="menu" href="/back/table_manage/">餐桌管理</a></li>
+            <li><a class="menu" href="/back/foodtype_manage/">菜系管理</a></li>
+            <li><a class="menu" href="/back/food_manage/">菜品管理</a></li>
+            <li><a class="menu"  href="/back/order/">餐厅订单</a></li>
+            </ul>
+        </div>
         </div>
         {% block body %} {% endblock %}
 

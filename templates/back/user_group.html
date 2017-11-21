@@ -4,18 +4,18 @@
 {% block body %}
      <div class="cont">
             <h3>添加用户组</h3>
-            <form>
-                <input type="text" name="groupname" placeholder="新用户组" id="new_groupname">
-                <input type="submit" value="添加" id="groupadd_confirm">
+            <form  class="form-inline">
+                <input type="text" name="groupname" placeholder="新用户组" id="new_groupname" class="form-control input-sm">
+                <input type="submit" value="添加" id="groupadd_confirm" class="btn btn-primary input-sm">
             </form>
 
             <div id="groupedit_form" class="hide">
-                <form action="/back/groupedit/" method="POST">
+                <form action="/back/groupedit/" method="POST" class="form-inline" style="padding:10px 0">
                     {% csrf_token %}
-                    <input type="hidden" name="gid">
-                    <input type="text" name="groupname" placeholder="用户组">
-                    <input type="submit"  value="确认编辑">
-                    <input type="button"  value="取消编辑" id="groupedit_cancel">
+                    <input type="hidden" name="gid" class="form-control input-sm">
+                    <input type="text" name="groupname" placeholder="用户组" class="form-control input-sm">
+                    <input type="submit"  value="确认编辑" class="btn btn-primary input-sm">
+                    <input type="button"  value="取消编辑" id="groupedit_cancel" class="btn btn-default input-sm">
                 </form>
             </div>
 
@@ -23,7 +23,7 @@
 
             <div class="col_2_3_right">
                 <div class="index_viewport">
-                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
                  <thead>
                         <tr>
                             <td>编号</td>

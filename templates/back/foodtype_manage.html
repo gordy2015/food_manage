@@ -7,20 +7,20 @@
 
             <div>
                 <h3>添加菜系</h3>
-                <form id=foodtype_add_form action="/back/foodtype_manage/" method="POST">
+                <form id=foodtype_add_form action="/back/foodtype_manage/" method="POST" class="form-inline">
                     {% csrf_token %}
-                    <input type="text" name="foodtypename" placeholder="菜系名称">
-                    <input type="submit" value="添加" id="tableadd">
+                    <input type="text" name="foodtypename" placeholder="菜系名称" class="form-control input-sm">
+                    <input type="submit" value="添加" id="tableadd" class="btn btn-primary input-sm">
                 </form>
             </div>
 
           {#   <div class="shade hide"></div>   <div class="foodtypeedit-modal" hide">   <form id="foodtypeedit_form">#}
             <div class="foodtypeedit_dv hide">
-                <form id="foodtypeedit_form">
+                <form id="foodtypeedit_form" class="form-inline" style="padding:10px 0">
                     <input type="hidden" name="tid">
-                    <input type="text" name="foodtypename" id="foodtypename2" placeholder="菜系名称">
-                    <input type="button" value="确定修改" id="foodtypeedit_confirm">
-                    <input type="button" value="取消" class="foodtypeedit_cancel">
+                    <input type="text" name="foodtypename" id="foodtypename2" placeholder="菜系名称" class="form-control input-sm">
+                    <input type="button" value="确定修改" id="foodtypeedit_confirm" class="btn btn-primary input-sm">
+                    <input type="button" value="取消" class="foodtypeedit_cancel btn btn-default input-sm">
                     <p id="err_foodtype_edit_ajax" style="color: red"></p>
                 </form>
             </div>
@@ -28,7 +28,7 @@
             <h3>菜系列表</h3>
             <div class="col_2_3_right">
                 <div class="index_viewport">
-                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
                         <thead>
                             <tr>
                                 <td>菜系编号</td>
