@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.7/css/jquery.dataTables.css">
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/mystyle.css" rel="stylesheet">
+
     <style>
         body{
             margin: 0;
@@ -54,29 +59,55 @@
     <div>
 
 
-        <div style="height: 48px;background-color: #2459a2;color: white">被玩坏的小鸟点餐系统
-            {% if request.session.username %}
-                &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
-                &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
-            {% endif %}
-         </div>
+            <div style="height: 48px;background-color: #2459a2;color: white">被玩坏的小鸟点餐系统
+                {% if request.session.username %}
+                    &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
+                    &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
+                {% endif %}
+             </div>
 
-        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: ghostwhite;">
-            <a class="menu" href="/back/user_info/">用户管理</a>
-            <a class="menu" href="/back/group_info/">用户组管理</a>
-            <a class="menu" href="/back/table_manage/">餐桌管理</a>
-            <a class="menu" href="/back/foodtype_manage/">菜系管理</a>
-            <a class="menu" href="/back/food_manage/">菜品管理</a>
-            <a class="menu" href="/back/order/">订单管理</a>
+
+
+        <div class="list-group">
+            <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: ghostwhite;">
+                <a class="list-group-item menu" href="/back/user_info/">用户管理</a>
+                <a class="list-group-item menu" href="/back/group_info/">用户组管理</a>
+                <a class="list-group-item menu" href="/back/table_manage/">餐桌管理</a>
+                <a class="list-group-item menu" href="/back/foodtype_manage/">菜系管理</a>
+                <a class="list-group-item menu" href="/back/food_manage/">菜品管理</a>
+                <a class="list-group-item menu" href="/back/order/">订单管理</a>
+            </div>
         </div>
         {% block body %} {% endblock %}
 
     </div>
 
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
     <script src="/static/jquery-1.12.4.js"></script>
     <script src="/static/jquery.cookie.js"></script>
+
     <!-- DataTables -->
     <script type="text/javascript" charset="utf8" src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.js"></script>
+
+    <script>
+        function myfun2() {
+            {
+                var c = self.location.href;
+                console.log(c);
+{#                var t = c.indexOf("/back/groupdel_");#}
+{#                if ( t > 10 ) {#}
+{#                    var newhref = 'http://' + self.location.host + '/back/group_info/';#}
+{#                    top.location.href = newhref#}
+                }
+        };
+            /*用window.onload调用myfun()*/
+
+    </script>
+
     {% block js %}{% endblock %}
 </body>
 </html>
