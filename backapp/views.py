@@ -318,27 +318,31 @@ def order_add_ajax(request):
         fcount = request.POST.get('food_count')
         v = request.POST.get('viptype')
         o = request.POST.get('orderstatus')
-        ou_id = someFunc.randomnum()
-        nod = {'table_id':t, 'orderstatus':o, 'vip_type':v, 'ou_id':ou_id}
-        cnod = models.order.objects.create(**nod)
-        if cnod:
-            order_id = models.order.objects.filter(ou_id=ou_id).first().id
-            nfc = {'food_cho_id':f, 'food_count':fcount, 'ou_id':ou_id, 'order_n_id':order_id}
-            cnfc = models.food_choose.objects.create(**nfc)
-            # # print(t,f,fcount,v,o)
-            # # print('nod:%s, nfc:%s, nod_id:%s' %(nod,nfc,nod_id))
-            if cnfc:
-                ret['status'] = True
-                ret['info'] = '添加成功'
-            else:
-                ret['status'] = False
-                ret['info'] = '添加失败'
+        if int(fcount):
+            ou_id = someFunc.randomnum()
+            nod = {'table_id':t, 'orderstatus':o, 'vip_type':v, 'ou_id':ou_id}
+            cnod = models.order.objects.create(**nod)
+            if cnod:
+                order_id = models.order.objects.filter(ou_id=ou_id).first().id
+                nfc = {'food_cho_id':f, 'food_count':fcount, 'ou_id':ou_id, 'order_n_id':order_id}
+                cnfc = models.food_choose.objects.create(**nfc)
+                # # print(t,f,fcount,v,o)
+                # # print('nod:%s, nfc:%s, nod_id:%s' %(nod,nfc,nod_id))
+                if cnfc:
+                    ret['status'] = True
+                    ret['info'] = '添加成功'
+                else:
+                    ret['status'] = False
+                    ret['info'] = '添加失败'
         else:
             ret['status'] = False
             ret['info'] = '添加失败'
+    except ValueError as e:
+        ret['status'] = False
+        ret['info'] = '数量栏请输入数字'
     except Exception as e:
         ret['status'] = False
-        ret['info'] = '请求错误或请输入数字'
+        ret['info'] = '请求错误'
         print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
 
@@ -458,9 +462,10 @@ def fcount_comfirm(request):
                 else:
                     ret['status'] = False
                     ret['info'] = '修改失败'
-        else:
-            ret['status'] = False
-            ret['info'] = '请输入数量'
+    except ValueError as e:
+        ret['status'] = False
+        ret['info'] = '数量栏请输入数字'
+
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误或请输入数字'
@@ -494,12 +499,12 @@ def fc_add_ajax(request):
             else:
                 ret['status'] = False
                 ret['info'] = '添加失败'
-        else:
-            ret['status'] = False
-            ret['info'] = '请输入数量'
+    except ValueError as e:
+        ret['status'] = False
+        ret['info'] = '数量栏请输入数字'
     except Exception as e:
         ret['status'] = False
-        ret['info'] = '请求错误或请输入数字'
+        ret['info'] = '请求错误'
         print('EXCEPTION:%s' % e)
     return HttpResponse(json.dumps(ret))
 
