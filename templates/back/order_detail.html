@@ -50,7 +50,7 @@
                                 <td>{{ s.food_cho.vip_price }}</td>
                                 <td class="feec">{% singlefee s.food_cho.vip_price s.food_count %}</td>
                             {% endif %}
-                                <td><a onclick="fcount_edit({{ s.id }},{{ s.food_count }})" class="fcount_edit">修改数量</a>|<a class="fc_del">删除</a></td>
+                                <td><a onclick="fcount_edit({{ s.id }},{{ s.food_count }})" class="fcount_edit btn btn-primary btn-xs">修改数量</a> <a class="fc_del btn btn-default btn-xs">删除</a></td>
                             </tr>
                     {% endfor %}
                     </tbody>
@@ -115,7 +115,7 @@
 
         //点击”修改数量“ 实现文字变成input框，并可保存
         function fcount_edit(id,fcount) {
-            $('.fcount_'+id).html('<input  style="width:30px;" type="text" value="'+fcount+'" class="new_fcount"><a onclick="fcount_comfirm('+id+','+fcount+');">保存</a>|<a onclick="fcount_cancel('+id+','+fcount+')">取消</a>');
+            $('.fcount_'+id).html('<input style="width:30px;" type="text" value="'+fcount+'" class="new_fcount"> <a onclick="fcount_comfirm('+id+','+fcount+');" class="btn btn-primary btn-xs">保存</a> <a onclick="fcount_cancel('+id+','+fcount+')" class="btn btn-default btn-xs">取消</a>');
         };
 
         function fcount_cancel(id,fcount) {

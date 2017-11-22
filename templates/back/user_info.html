@@ -14,65 +14,81 @@
             <input type="submit" value="添加" class="fc_add btn btn-primary input-sm">
         </form>
 
-            <h3>用户列表</h3>
+        <h3>用户列表</h3>
 
-            <div class="col_2_3_right">
-                <div class="index_viewport">
-                <table id="example" cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
-                    <thead>
-                        <tr>
-                            <td>编号</td>
-                            <td>用户名</td>
-                            <td>操作</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for row in user_list %}
-                    <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
-                         <td>{{ forloop.counter }}</td>
-                         <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
-                         <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑
-                             <a class="userdel">删除</a> </td>   {#href="/back/userdel_{{ row.id }}/"#}
+        <div class="col_2_3_right">
+            <div class="index_viewport">
+            <table id="example" cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
+                <thead>
+                    <tr>
+                        <td>编号</td>
+                        <td>用户名</td>
+                        <td>操作</td>
                     </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                </div>
-            </div>
+                </thead>
+                <tbody>
+                {% for row in user_list %}
+                <tr bid="{{ row.id }}" gid="{{ row.grouptype_id }}">
+                     <td>{{ forloop.counter }}</td>
+                     <td><a href="/back/userdetail_{{ row.id }}/">{{ row.username }}</a> </td>
+                    <td><button type="button" class="btn btn-primary btn-xs useredit" data-toggle="modal" data-target="#useredit_modal" onclick="useredit({{ row.id }})">编辑</button>
 
-
-            <div>
-                <ul>
-                    {% for row in user_detail %}
-                        <li>用户名：{{ row.username }}</li>
-                        <li>邮箱：{{ row.email }}</li>
-                        <li>所属用户组：{{ row.grouptype.groupname }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="shade hide"></div>
-            <div>
-                <form class="edit-modal hide">
-                    <p id="user"></p>
-                    {% csrf_token %}
-                    <input type="hidden" name="edit_id2" id="edit_id2">
-{#                   <input type="text" name="user2" id="user2" placeholder="用户名">#}
-                    <input type="password" name="pwd2" id="pwd2" placeholder="密码">
-                    <input type="text" name="email2" id="email2" placeholder="邮箱">
-
-                    <select name="grouptype2" id="grouptype2">
-                        {% for row in group_list %}
-                        <option value="{{ row.id }}"> {{ row.groupname }}</option>
-                        {% endfor %}
-                    </select>
-                    <a id="edit_submit" onclick="edit_submit()">确认编辑</a>
-                    <input type="button" value="取消" id="cancel_useredit">
-                    <p id="useredit_err" style="color: red"></p>
-                </form>
-
+{#                         <td><a onclick="useredit({{ row.id }})"  class="useredit">编辑#}
+                         <a class="userdel btn btn-default btn-xs">删除</a> </td>   {#href="/back/userdel_{{ row.id }}/"#}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
             </div>
         </div>
+
+
+        <div>
+            <ul>
+                {% for row in user_detail %}
+                    <li>用户名：{{ row.username }}</li>
+                    <li>邮箱：{{ row.email }}</li>
+                    <li>所属用户组：{{ row.grouptype.groupname }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="useredit_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><p id="user"></p></h4>
+              </div>
+              <div class="modal-body">
+
+                  <form class="form-inline user_edit">
+                        {% csrf_token %}
+                        <input type="hidden" name="edit_id2" id="edit_id2">
+                        <input type="password" name="pwd2" id="pwd2" placeholder="密码" class="form-control input-sm">
+                        <input type="text" name="email2" id="email2" placeholder="邮箱" class="form-control input-sm">
+
+                        <select name="grouptype2" id="grouptype2" class="form-control input-sm">
+                            {% for row in group_list %}
+                            <option value="{{ row.id }}"> {{ row.groupname }}</option>
+                            {% endfor %}
+                        </select>
+                        <p id="useredit_err" style="color: red"></p>
+                    </form>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel_useredit">取消</button>
+                <button type="button" class="btn btn-primary" id="edit_submit" onclick="edit_submit()">确认编辑</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
 {% endblock %}
 
 
@@ -105,12 +121,13 @@
 
     $(function () {
         $('.useredit').click(function () {
-            $('.shade,.edit-modal').removeClass('hide');
+{#            $('.shade,.edit-modal').removeClass('hide');#}
             var bid = $(this).parent().parent().attr('bid');
             var gid = $(this).parent().parent().attr('gid');
             var username = $(this).parent().siblings().eq(1).text();
-            $('.edit-modal').find('input[name="edit_id2"]').val(bid);
-            $('.edit-modal').find('p[id=user]').text('编辑用户：' + username);
+            console.log(bid,gid,username);
+            $('.user_edit').find('input[name="edit_id2"]').val(bid);
+            $('.modal-title').find('p[id=user]').text('编辑用户：' + username);
 
         })
         $('#cancel_useredit').click(function () {
@@ -150,7 +167,7 @@
         $.ajax({
             type: "post",
             url: "/back/useredit_submit/",
-            data: $('.edit-modal').serialize(),
+            data: $('.user_edit').serialize(),
             beforeSend: function(xhr,settings){
                 xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
             },

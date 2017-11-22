@@ -92,13 +92,18 @@ def tabledel_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
-        w = models.table_manage.objects.filter(id=i).delete() #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
-        if w[0] == 1:
-            ret['info'] = '删除成功'
-            # print(w[0])
+        p = models.order.objects.filter(table_id=i).count()
+        if p <= 0:
+            w = models.table_manage.objects.filter(id=i).delete() #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
+            if w[0] == 1:
+                ret['info'] = '删除成功'
+                # print(w[0])
+            else:
+                ret['status'] = False
+                ret['info'] = '删除失败'
         else:
             ret['status'] = False
-            ret['info'] = '删除失败'
+            ret['info'] = '不能删除，存在此餐桌的订单'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误'
@@ -286,12 +291,17 @@ def food_del_ajax(request):
     ret = {'status': True, 'info': None, 'data': None}
     try:
         i = request.POST.get('id')
-        w = models.food_manage.objects.all().filter(id=i).delete()
-        if w[0] == 1:
-            ret['info'] = '删除成功'
+        p = models.food_choose.objects.filter(food_cho_id=i).count()
+        if p <= 0:
+            w = models.food_manage.objects.all().filter(id=i).delete()
+            if w[0] == 1:
+                ret['info'] = '删除成功'
+            else:
+                ret['status'] = False
+                ret['info'] = '删除失败'
         else:
             ret['status'] = False
-            ret['info'] = '删除失败'
+            ret['info'] = '不能删除，此菜品存在订单中'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误'

@@ -33,92 +33,104 @@
                     <input type="button" value="添加" id="orderadd" class="btn btn-primary input-sm">
                 </form>
             </div>
-            <h3>未结算的订单</h3>
-            <div class="col_2_3_right">
-                <div class="index_viewport">
-                    <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
-                        <thead>
-                            <tr>
-                                <td>订单编号</td>
-                                <td>所属餐桌</td>
-                                <td>下单日期</td>
-                                <td>是否VIP</td>
-                                <td>总费用</td>
-                                <td>状态</td>
-                                <td>操作</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in order %}
-                                {% if row.orderstatus != 1 %}
-                                    <tr tid="{{ row.id }}">
-                                    <td>{{ row.ou_id }}</td>
-                                    <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
-                                    <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
-                                    {% if row.vip_type == 0 %}
-                                        <td id="vt_{{ row.id }}">否</td>
-                                        {% elif row.vip_type == 1 %}
-                                        <td id="vt_{{ row.id }}">是</td>
-                                    {% endif %}
-                                    <td>{{ row.all_price }}</td>
-                                    {% if row.orderstatus == 0 %}
-                                        <td id="os_{{ row.id }}">未结账</td>
-                                        {% elif row.orderstatus == 1 %}
-                                        <td id="os_{{ row.id }}">已结账</td>
-                                    {% endif %}
-                                        <td><a class="orderedit_{{ row.id }}" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
-                                    | <a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-           <h3>历史订单</h3>
-            <div class="col_2_3_right">
-                <div class="index_viewport">
-                    <table id="example2"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
-                        <thead>
-                            <tr>
-                                <td>订单编号</td>
-                                <td>餐桌名</td>
-                                <td>下单日期</td>
-                                <td>是否VIP</td>
-                                <td>总费用</td>
-                                <td>状态</td>
-                                <td>操作</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in order %}
-                                {% if row.orderstatus == 1 %}
-                                    <tr tid="{{ row.id }}">
-                                    <td>{{ row.ou_id }}</td>
-                                    <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
-                                    <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
-                                    {% if row.vip_type == 0 %}
-                                        <td id="vt_{{ row.id }}">否</td>
-                                        {% elif row.vip_type == 1 %}
-                                        <td id="vt_{{ row.id }}">是</td>
-                                    {% endif %}
-                                    <td>{{ row.all_price }}</td>
-                                    {% if row.orderstatus == 0 %}
-                                        <td id="os_{{ row.id }}">未结账</td>
-                                        {% elif row.orderstatus == 1 %}
-                                        <td id="os_{{ row.id }}">已结账</td>
-                                    {% endif %}
-                                    <td><a class="orderedit_{{ row.id }}" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
-                                        |<a href="/back/order_detail-{{ row.id }}/">详细</a>| <a class="orderdel">删除</a> | <a class="ispay">结算</a></td>
-                                    </tr>
-                               {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <ul class="nav nav-tabs" style="padding: 10px 0">
+            <li><a href="#home" data-toggle="tab">未结算的订单</a></li>
+            <li><a href="#profile" data-toggle="tab">历史订单</a></li>
+            </ul>
 
+              <div class="tab-content" style="padding: 6px 0">
+                    <div class="tab-pane active" id="home">
+
+                        <div class="col_2_3_right">
+                            <div class="index_viewport">
+                                <table id="example"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td>订单编号</td>
+                                            <td>所属餐桌</td>
+                                            <td>下单日期</td>
+                                            <td>是否VIP</td>
+                                            <td>总费用</td>
+                                            <td>状态</td>
+                                            <td>操作</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in order %}
+                                            {% if row.orderstatus != 1 %}
+                                                <tr tid="{{ row.id }}">
+                                                <td>{{ row.ou_id }}</td>
+                                                <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
+                                                <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
+                                                {% if row.vip_type == 0 %}
+                                                    <td id="vt_{{ row.id }}">否</td>
+                                                    {% elif row.vip_type == 1 %}
+                                                    <td id="vt_{{ row.id }}">是</td>
+                                                {% endif %}
+                                                <td>{{ row.all_price }}</td>
+                                                {% if row.orderstatus == 0 %}
+                                                    <td id="os_{{ row.id }}">未结账</td>
+                                                    {% elif row.orderstatus == 1 %}
+                                                    <td id="os_{{ row.id }}">已结账</td>
+                                                {% endif %}
+                                                    <td><a class="orderedit_{{ row.id }} btn btn-primary btn-xs" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
+                                                 <a href="/back/order_detail-{{ row.id }}/" class="btn btn-default btn-xs">详细</a> <a class="orderdel btn btn-default btn-xs">删除</a> <a class="ispay btn btn-default btn-xs">结算</a></td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                <div class="tab-pane" id="profile">
+                     <div class="col_2_3_right">
+                         <div class="index_viewport">
+                         <table id="example2"  cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>订单编号</td>
+                                    <td>餐桌名</td>
+                                    <td>下单日期</td>
+                                    <td>是否VIP</td>
+                                    <td>总费用</td>
+                                    <td>状态</td>
+                                    <td>操作</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in order %}
+                                    {% if row.orderstatus == 1 %}
+                                        <tr tid="{{ row.id }}">
+                                        <td>{{ row.ou_id }}</td>
+                                        <td id="tn_{{ row.id }}">{{ row.table.tablename }}</td>
+                                        <td id="ot_{{ row.id }}">{{ row.ordertime|date:"Y-m-d H:i:s" }}</td>
+                                        {% if row.vip_type == 0 %}
+                                            <td id="vt_{{ row.id }}">否</td>
+                                            {% elif row.vip_type == 1 %}
+                                            <td id="vt_{{ row.id }}">是</td>
+                                        {% endif %}
+                                        <td>{{ row.all_price }}</td>
+                                        {% if row.orderstatus == 0 %}
+                                            <td id="os_{{ row.id }}">未结账</td>
+                                            {% elif row.orderstatus == 1 %}
+                                            <td id="os_{{ row.id }}">已结账</td>
+                                        {% endif %}
+                                        <td><a class="orderedit_{{ row.id }} btn btn-primary btn-xs" onclick="orderedit({{ row.id }},{{ row.table_id }},{{ row.vip_type }},{{ row.orderstatus }})">编辑</a>
+                                            <a href="/back/order_detail-{{ row.id }}/" class="btn btn-default btn-xs">详细</a> <a class="orderdel btn btn-default btn-xs">删除</a> <a class="ispay btn btn-default btn-xs">结算</a></td>
+                                        </tr>
+                                   {% endif %}
+                                {% endfor %}
+                            </tbody>
+                         </table>
+                         </div>
+                     </div>
+                </div>
+          </div>
+          
         </div>
 {% endblock %}
 
@@ -219,23 +231,26 @@
             var oldorderstatus = oldor.eq(5).text();
             var tra_ordertime = oldordertime.replace(" ", "T");  //时间格式换成datetime-local的格式，中间为T
             //console.log(oldtablename,oldordertime,oldviptype,oldorderstatus);
-            console.log(oldordertime,tra_ordertime)
-            $('#ot_'+id).html('<input type="datetime-local" value="'+tra_ordertime+'" class="form-control input-sm">');  //定餐时间
+            //console.log(oldordertime,tra_ordertime);
+            $('#ot_'+id).html('<input type="datetime-local" value="'+tra_ordertime+'" class="form-control input-sm" style="width: auto;">');  //定餐时间
 
-            var ntn = '<select class="form-control input-sm"> {% for row in tb %} <option value="{{ row.id }}">{{ row.tablename }}</option> {% endfor %} </select>';
+            var ntn = '<select class="form-control input-sm" style="width: auto;"> {% for row in tb %} <option value="{{ row.id }}">{{ row.tablename }}</option> {% endfor %} </select>';
             $('#tn_'+id).html(ntn);
             $('#tn_'+id+' select').val(tableid);
 
-            var nvt = '<select class="form-control input-sm"> <option value="0">否</option> <option value="1">是</option> </select>';
+            var nvt = '<select class="form-control input-sm" style="width: auto;"> <option value="0">否</option> <option value="1">是</option> </select>';
             $('#vt_'+id).html(nvt);
             $('#vt_'+id+' select').val(viptype);
 
-            var nos = '<select class="form-control input-sm"><option value="0">未结帐</option> <option value="1">已结帐</option> </select>';
+            var nos = '<select class="form-control input-sm" style="width: auto;"><option value="0">未结帐</option> <option value="1">已结帐</option> </select>';
             $('#os_'+id).html(nos);
             $('#os_'+id+' select').val(orderstatus);
 
-            var noe = '<a onclick="orderedit_comfirm('+id+')">确认编辑</a>|<a onclick=orderedit_cancel("'+id+'");>取消编辑</a>';
+            var noe = '<a onclick="orderedit_comfirm('+id+')" class="btn btn-primary btn-xs">确认编辑</a> <a onclick=orderedit_cancel("'+id+'"); class="btn btn-default btn-xs">取消编辑</a>';
+            $('.orderedit_'+id).removeClass('btn-primary');
             $('.orderedit_'+id).html(noe);
+
+
         };
 
         function orderedit_cancel(id) {

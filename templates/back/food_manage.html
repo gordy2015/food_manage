@@ -42,29 +42,45 @@
                                 <td>{{ row.foodtype.foodtypename }}</td>
                                 <td>{{ row.price }}</td>
                                 <td>{{ row.vip_price }}</td>
-                                <td><a onclick="foodedit({{ row.id }})" >编辑</a>| <a class="fooddel">删除</a></td><span id="err_food_del_ajax"></span>
+                                <td><a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" onclick="foodedit({{ row.id }})">编辑</a>
+                                <a class="fooddel btn btn-default btn-xs">删除</a></td>
+                                <span id="err_food_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="shade hide"></div>
-            <div class="foodedit-modal hide">
-                <form id="foodedit_form">
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">菜品编辑</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form class="form-inline foodedit_form">
                     <input type="hidden" name="tid">
-                    <input type="text" name="foodname" id='foodname2' placeholder="菜名">
-                    <input type="text" name="price" id='price2' placeholder="价格">
-                    <input type="text" name="vip_price" id='vip_price2' placeholder="会员价格">
-                    <select name="foodtypename" id="foodtypename2">
+                    <input type="text" name="foodname" id='foodname2' placeholder="菜名" class="form-control input-sm">
+                    <input type="text" name="price" id='price2' placeholder="价格" class="form-control input-sm" style="width: 100px;">
+                    <input type="text" name="vip_price" id='vip_price2' placeholder="会员价格" class="form-control input-sm" style="width: 100px;">
+                    <select name="foodtypename" id="foodtypename2" class="form-control input-sm">
                         {% for row in foodtype %}
                             <option value="{{ row.id }}">{{ row.foodtypename }}</option>
                         {% endfor %}
                     </select>
-                    <input type="button" value="确定修改" id="foodedit_confirm">
-                    <input type="button" value="取消" class="foodedit_cancel">
                     <p id="err_food_edit_ajax" style="color: red"></p>
                 </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default foodedit_cancel" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary foodedit_confirm">确定修改</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
         </div>
@@ -84,8 +100,8 @@
 {#            })#}
 
             $('.foodedit_cancel').click(function () {
-                $('.foodedit-modal,.shade').addClass('hide')
-                $('#err_food_manage_ajax').text('')
+{#                $('.foodedit-modal,.shade').addClass('hide');#}
+                $('#err_food_manage_ajax').text('');
             });
         });
 
@@ -111,8 +127,8 @@
 
 
         function foodedit(id) {
-            $('.foodedit-modal,.shade').removeClass('hide');
-            $('#foodedit_form').find('input[name="tid"]').val(id);   //这里给input[name="tid"] 赋值是为了给foodedit_confirm提交时取得id值
+{#            $('.foodedit-modal,.shade').removeClass('hide');#}
+            $('.foodedit_form').find('input[name="tid"]').val(id);   //这里给input[name="tid"] 赋值是为了给foodedit_confirm提交时取得id值
             $.ajax({
                 type: "post",
                 url: "/back/foodedit_ajax/",
@@ -138,11 +154,11 @@
 
 
 
-        $('#foodedit_confirm').click(function () {
+        $('.foodedit_confirm').click(function () {
             $.ajax({
                 url: "/back/foodedit_confirm/",
                 type: "POST",
-                data: $('#foodedit_form').serialize(),
+                data: $('.foodedit_form').serialize(),
                 beforeSend: function(xhr,settings){
                     xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
                 },

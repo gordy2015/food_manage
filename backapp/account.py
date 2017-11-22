@@ -164,8 +164,10 @@ def useredit_submit(request):
         e = request.POST.get('email2')
         g = request.POST.get('grouptype2')
         # print(i,u,p,e,g,type(g))
+        print('i:%s p:%s e:%s g:%s' % (i, p, e, g))
         es = models.user_info.objects.filter(id=i).values('email').first()
         # 判断邮箱格式是否正确(邮箱名称可以包含中文)
+
         if len(e) > 7:
             if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", e) == None:
                 ret['status'] = False

@@ -39,7 +39,8 @@
                             <tr tid="{{ row.id }}">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ row.tablename }}</td>
-                                <td><a class="tableedit" onclick="tableedit({{ row.id }})">编辑</a> | <a class="tabledel">删除</a> </td> <span id="err_table_del_ajax"></span>
+                                <td><a class="tableedit btn btn-primary btn-xs" onclick="tableedit({{ row.id }})">编辑</a> <a class="tabledel btn btn-default btn-xs">删除</a> </td>
+                                <span id="err_table_del_ajax"></span>
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -41,7 +41,7 @@
                             <tr tid="{{ row.id }}">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ row.foodtypename }}</td>
-                                <td><a class="foodtypeedit" onclick="foodtypeedit({{ row.id }})">编辑</a>| <a class="foodtypedel">删除</a></td><span id="err_foodtype_del_ajax"></span>
+                                <td><a class="foodtypeedit btn btn-primary btn-xs" onclick="foodtypeedit({{ row.id }})">编辑</a> <a class="foodtypedel btn btn-default btn-xs">删除</a></td>
                             </tr>
                             {% endfor %}
                         </tbody>
