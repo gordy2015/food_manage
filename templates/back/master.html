@@ -57,15 +57,20 @@
 <body>
 
     <div>
-           <div style="height: 48px;background-color: #2459a2;color: white">被玩坏的小鸟点餐系统
-            {% if request.session.username %}
+
+        <div style="height: 48px;background-color: #0066CC;color: white">
+            <p style="text-align:left;padding: 10px 0"><strong class="glyphicon glyphicon-fire" aria-hidden="true" style="float:left;font-size: 18px;">小鸟点餐后台</strong>
+            <span style="float:right;">
+                {% if request.session.username %}
                 &nbsp&nbsp&nbsp&nbsp用户名: {{ request.session.username }}
-                &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/">  logout</a>
-            {% endif %}
-         </div>
+                &nbsp&nbsp&nbsp&nbsp <a href="/back/logout/" class="btn btn-info btn-sm">logout</a>
+                {% endif %}
+            </span></p>
+        </div>
 
 
-        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 200px;background-color: ghostwhite;">
+
+        <div style="position: absolute;top:48px;bottom: 0;left: 0;width: 160px;background-color: #ECF5FF;">
             <ul class="nav nav-pills nav-stacked">
             <li><a class="menu"  href="/back/user_info/">用户管理</a></li>
             <li><a class="menu"  href="/back/group_info/">用户组管理</a></li>
@@ -75,10 +80,14 @@
             <li><a class="menu"  href="/back/order/">餐厅订单</a></li>
             </ul>
         </div>
-        </div>
-        {% block body %} {% endblock %}
+
+
 
     </div>
+
+        {% block body %} {% endblock %}
+
+
 
 
     <!-- Bootstrap -->
@@ -91,20 +100,20 @@
     <!-- DataTables -->
     <script type="text/javascript" charset="utf8" src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.js"></script>
 
-    <script>
-        function myfun2() {
-            {
-                var c = self.location.href;
-                console.log(c);
+{#    <script>#}
+{#        function myfun2() {#}
+{#            {#}
+{#                var c = self.location.href;#}
+{#                console.log(c);#}
 {#                var t = c.indexOf("/back/groupdel_");#}
 {#                if ( t > 10 ) {#}
 {#                    var newhref = 'http://' + self.location.host + '/back/group_info/';#}
 {#                    top.location.href = newhref#}
-                }
-        };
-            /*用window.onload调用myfun()*/
-
-    </script>
+{#                }#}
+{#        };#}
+{#            /*用window.onload调用myfun()*/#}
+{##}
+{#    </script>#}
 
     {% block js %}{% endblock %}
 </body>
