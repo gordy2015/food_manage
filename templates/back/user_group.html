@@ -56,7 +56,8 @@
         $('.groupedit').click(function () {
             $('#groupedit_form').removeClass('hide');
             var gid = $(this).attr('gid');
-            var groupname = $(this).siblings().eq(1).text();
+            var groupname = $(this).parent().siblings().eq(1).text();
+            console.log(gid,groupname);
             $('#groupedit_form').find('input[name="gid"]').val(gid);
             $('#groupedit_form').find('input[name="groupname"]').val(groupname);
         })
