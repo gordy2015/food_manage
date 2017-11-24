@@ -130,7 +130,7 @@ def foodtype_add_ajax(request):
                 ret['info'] = '添加失败'
         else:
             ret['status'] = False
-            ret['info'] = '内容不能为空'
+            ret['info'] = '添加失败，请输入菜系名'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误'
@@ -222,7 +222,8 @@ def food_add_ajax(request):
         p = request.POST.get('price')
         v = request.POST.get('vip_price')
         t = request.POST.get('foodtypename')
-        if f and p and v and t:
+
+        if f and int(p) and int(v) and t:
             fo = {'foodname':f,'price':p,'vip_price':v,'foodtype_id':t}
             w = models.food_manage.objects.create(**fo)  #有id返回(1, {'backapp.table_manage': 1})，  无id返回(0, {'backapp.table_manage': 0})
             if w:
@@ -233,6 +234,9 @@ def food_add_ajax(request):
         else:
             ret['status'] = False
             ret['info'] = '内容不能为空'
+    except ValueError as e:
+        ret['status'] = False
+        ret['info'] = '价格栏请输入数字'
     except Exception as e:
         ret['status'] = False
         ret['info'] = '请求错误'
